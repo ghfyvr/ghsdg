@@ -240,6 +240,24 @@ export default function ScriptDetailsPage() {
             <h2 className="mb-3 text-xl font-bold text-white">Description</h2>
             <p className="text-gray-300 whitespace-pre-line">{script.description}</p>
           </div>
+
+          <div className="mt-4 rounded-lg border-l-4 border-[#00ff9d] bg-[#1a1a1a] p-6">
+            <h2 className="mb-3 text-xl font-bold text-white">Script Code</h2>
+            <div className="relative">
+              <div className="font-mono text-sm text-gray-300 whitespace-pre-wrap overflow-auto max-h-[300px]">
+                {escapeHtml(script.code)}
+              </div>
+              <button
+                className="absolute right-0 top-0 rounded bg-[#1a1a1a] p-2 text-[#00ff9d] transition-all hover:bg-[#2a2a2a]"
+                onClick={() => {
+                  navigator.clipboard.writeText(script.code)
+                  alert("Script copied to clipboard!")
+                }}
+              >
+                <i className="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="w-full md:w-1/3">
@@ -313,24 +331,6 @@ export default function ScriptDetailsPage() {
               </div>
             </div>
           )}
-        </div>
-      </div>
-
-      <div className="mt-4 rounded-lg border-l-4 border-[#00ff9d] bg-[#1a1a1a] p-6">
-        <h2 className="mb-4 text-xl font-bold text-white">Script Code</h2>
-        <div className="relative">
-          <pre className="max-h-[300px] overflow-auto rounded bg-[#050505] p-4 font-mono text-sm text-gray-300">
-            <code>{escapeHtml(script.code)}</code>
-          </pre>
-          <button
-            className="absolute right-4 top-4 rounded bg-[#1a1a1a] p-2 text-[#00ff9d] transition-all hover:bg-[#2a2a2a]"
-            onClick={() => {
-              navigator.clipboard.writeText(script.code)
-              alert("Script copied to clipboard!")
-            }}
-          >
-            <i className="fas fa-copy"></i>
-          </button>
         </div>
       </div>
 

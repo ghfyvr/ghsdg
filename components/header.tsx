@@ -49,7 +49,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/5 bg-[#0a0a0a]/90 py-4 backdrop-blur">
       <div className="container mx-auto flex flex-col items-center justify-between px-5 md:flex-row">
-        <Link href="/" className="mb-5 flex items-center text-3xl font-bold tracking-tighter rgb-gradient-text md:mb-0">
+        <Link href="/" className="mb-5 flex items-center text-3xl font-bold tracking-tighter text-[#00ff9d] md:mb-0">
           NEXUS<span className="text-white">.</span>
         </Link>
         <nav>
@@ -168,7 +168,7 @@ export default function Header() {
                 <li>
                   <Link
                     href="/login"
-                    className="flex items-center rounded rgb-button px-5 py-2.5 text-sm font-medium text-white transition-all"
+                    className="flex items-center rounded border border-[#00c6ed] bg-[rgba(0,198,237,0.1)] px-5 py-2.5 text-sm font-medium text-[#00c6ed] transition-all hover:bg-[rgba(0,198,237,0.2)]"
                   >
                     <i className="fas fa-sign-in-alt mr-2"></i> Login
                   </Link>
@@ -176,7 +176,7 @@ export default function Header() {
                 <li>
                   <Link
                     href="/signup"
-                    className="flex items-center rounded rgb-button px-5 py-2.5 text-sm font-medium text-white transition-all"
+                    className="flex items-center rounded border border-[#00ff9d] bg-[rgba(0,255,157,0.1)] px-5 py-2.5 text-sm font-medium text-[#00ff9d] transition-all hover:bg-[rgba(0,255,157,0.2)]"
                   >
                     <i className="fas fa-user-plus mr-2"></i> Sign Up
                   </Link>

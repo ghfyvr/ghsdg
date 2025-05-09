@@ -38,6 +38,7 @@ export default function UploadKeysPage() {
     if (isLoading) return
 
     if (!user) {
+      // Use window.location for a hard navigation that will refresh the page
       window.location.href = "/login"
       return
     }
@@ -51,13 +52,14 @@ export default function UploadKeysPage() {
         // If not admin, redirect to home
         if (!adminStatus) {
           console.log("User is not admin, redirecting...")
-          setTimeout(() => {
-            window.location.href = "/"
-          }, 500)
+          // Use window.location for a hard navigation that will refresh the page
+          window.location.href = "/"
         }
       } catch (error) {
         console.error("Error checking admin status:", error)
         setUserIsAdmin(false)
+        // Use window.location for a hard navigation that will refresh the page
+        window.location.href = "/"
       } finally {
         setAdminCheckComplete(true)
       }
@@ -222,7 +224,8 @@ export default function UploadKeysPage() {
 
       // Redirect to key generator page after a delay
       setTimeout(() => {
-        router.push("/key-generator")
+        // Use window.location for a hard navigation that will refresh the page
+        window.location.href = "/key-generator"
       }, 2000)
     } catch (error) {
       console.error("Error uploading key:", error)
@@ -263,6 +266,10 @@ export default function UploadKeysPage() {
             <Link
               href="/key-generator"
               className="inline-flex items-center rounded bg-gradient-to-r from-[#00ff9d] to-[#00b8ff] px-6 py-3 font-semibold text-[#050505] transition-all hover:shadow-lg hover:shadow-[#00ff9d]/20"
+              onClick={(e) => {
+                e.preventDefault()
+                window.location.href = "/key-generator"
+              }}
             >
               <i className="fas fa-arrow-left mr-2"></i> Back to Keys
             </Link>
