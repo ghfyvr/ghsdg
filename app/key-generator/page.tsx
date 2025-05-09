@@ -1,13 +1,10 @@
 "use client"
 
-import type React from "react"
-
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useAuth } from "@/hooks/use-auth"
 import { isAdmin } from "@/lib/admin"
 import Image from "next/image"
-import { logActivity } from "@/lib/activity-logger"
 
 type Game = {
   id: number
@@ -54,9 +51,6 @@ export default function KeyGeneratorPage() {
         try {
           const adminStatus = await isAdmin(user.username)
           setUserIsAdmin(adminStatus)
-
-          // Log activity
-          logActivity(user.username, "view_page", "Viewed key generator page")
         } catch (error) {
           console.error("Error checking admin status:", error)
           setUserIsAdmin(false)
@@ -95,13 +89,6 @@ export default function KeyGeneratorPage() {
     setFilteredKeys(filtered)
   }, [searchTerm, keys, filter])
 
-  const handleUploadKeyClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault()
-
-    // Use window.location for a hard navigation that will refresh the page
-    window.location.href = "/upload-keys"
-  }
-
   if (isLoading || !adminCheckComplete) {
     return (
       <div className="container mx-auto px-5 py-16">
@@ -124,7 +111,13 @@ export default function KeyGeneratorPage() {
             <Link
               href="/upload-keys"
               className="inline-flex items-center rounded bg-gradient-to-r from-[#00ff9d] to-[#00b8ff] px-6 py-3 font-semibold text-[#050505] transition-all hover:shadow-lg hover:shadow-[#00ff9d]/20"
-              onClick={handleUploadKeyClick}
+              onClick={(e) => {
+                // Prevent default to handle navigation manually
+                e.preventDefault()
+
+                // Use window.location for a hard navigation that will refresh the page
+                window.location.href = "/upload-keys"
+              }}
             >
               <i className="fas fa-upload mr-2"></i> Upload Key
             </Link>
@@ -196,15 +189,6 @@ export default function KeyGeneratorPage() {
                 ? "No keys match your search criteria. Try a different search term."
                 : "There are no keys available at the moment. Check back later."}
             </p>
-            {userIsAdmin && (
-              <Link
-                href="/upload-keys"
-                className="inline-flex items-center rounded bg-gradient-to-r from-[#00ff9d] to-[#00b8ff] px-6 py-3 font-semibold text-[#050505] transition-all hover:shadow-lg hover:shadow-[#00ff9d]/20"
-                onClick={handleUploadKeyClick}
-              >
-                <i className="fas fa-upload mr-2"></i> Upload Key
-              </Link>
-            )}
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

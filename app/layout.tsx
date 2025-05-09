@@ -6,8 +6,6 @@ import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { AuthProvider } from "@/components/auth-provider"
 import { BanNotification } from "@/components/ban-notification"
-import { AdminPanelToggle } from "@/components/admin-panel-toggle"
-import { UserThemeProvider } from "@/components/user-theme-provider"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -27,15 +25,12 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <AuthProvider>
-            <UserThemeProvider>
-              <div className="flex min-h-screen flex-col">
-                <Header />
-                <BanNotification />
-                <AdminPanelToggle />
-                <main className="flex-1">{children}</main>
-                <Footer />
-              </div>
-            </UserThemeProvider>
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              <BanNotification />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </div>
           </AuthProvider>
         </ThemeProvider>
       </body>

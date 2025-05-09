@@ -9,8 +9,6 @@ import Link from "next/link"
 import { fetchGameDetailsById, fetchGameDetailsByName } from "@/app/actions/fetch-game-details"
 import { scriptCategories } from "@/lib/categories"
 import { validateScript } from "@/lib/script-validation"
-import { logActivity } from "@/lib/activity-logger"
-import { isAdmin } from "@/lib/admin"
 
 type GameSearchResult = {
   gameId: string
@@ -46,6 +44,7 @@ export default function UploadScriptsPage() {
   const [searchMethod, setSearchMethod] = useState<"id" | "name">("id")
   const [gameSearchResults, setGameSearchResults] = useState<GameSearchResult[]>([])
   const [showSearchResults, setShowSearchResults] = useState(false)
+  const [showCategories, setShowCategories] = useState(false)
   const [isNexusTeamMember, setIsNexusTeamMember] = useState(false)
   const [uploadAsTeam, setUploadAsTeam] = useState(false)
   const [userIsAdmin, setUserIsAdmin] = useState(false)
@@ -73,7 +72,6 @@ export default function UploadScriptsPage() {
         try {
           const adminStatus = await isAdmin(user.username)
           setUserIsAdmin(adminStatus)
-          setIsNexusTeamMember(adminStatus)
         } catch (error) {
           console.error("Error checking admin status:", error)
           setUserIsAdmin(false)
@@ -177,8 +175,6 @@ export default function UploadScriptsPage() {
     })
   }
 
-  const [showCategories, setShowCategories] = useState(false)
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setMessage({ type: "", text: "" })
@@ -219,9 +215,8 @@ export default function UploadScriptsPage() {
     }
 
     // Create a script object
-    const scriptId = Date.now().toString()
     const script = {
-      id: scriptId,
+      id: Date.now().toString(),
       title: scriptTitle,
       description: scriptDescription,
       code: scriptCode,
@@ -249,11 +244,6 @@ export default function UploadScriptsPage() {
     // Save back to localStorage
     localStorage.setItem("nexus_scripts", JSON.stringify(existingScripts))
 
-    // Log the activity
-    if (user) {
-      logActivity(user.username, "upload_script", `Script: ${scriptTitle} | Game: ${gameDetails.name} | ${scriptId}`)
-    }
-
     // Show success message
     setMessage({ type: "success", text: "Script uploaded successfully!" })
 
@@ -272,7 +262,7 @@ export default function UploadScriptsPage() {
 
     // Redirect to scripts page after a delay
     setTimeout(() => {
-      window.location.href = "/scripts"
+      router.push("/scripts")
     }, 2000)
   }
 
@@ -604,4 +594,10 @@ export default function UploadScriptsPage() {
       </div>
     </div>
   )
+}
+
+async function isAdmin(username: string): Promise<boolean> {
+  // Replace with your actual admin check logic (e.g., fetching from a database)
+  // This is just a placeholder
+  return username === "Nexus"
 }

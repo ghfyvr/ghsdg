@@ -7,8 +7,9 @@ import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/use-auth"
 import { isAdmin } from "@/lib/admin"
 import Link from "next/link"
+
+// Add these imports at the top
 import { fetchGameDetailsById, fetchGameDetailsByName } from "@/app/actions/fetch-game-details"
-import { logActivity } from "@/lib/activity-logger"
 
 export default function UploadKeysPage() {
   const { user, isLoading } = useAuth()
@@ -178,9 +179,8 @@ export default function UploadKeysPage() {
       setIsUploading(true)
 
       // Create a key object
-      const keyId = `key-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
       const key = {
-        id: keyId,
+        id: `key-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
         title: keyTitle,
         description: keyDescription,
         keyCode: keyCode,
@@ -202,11 +202,6 @@ export default function UploadKeysPage() {
 
       // Save back to localStorage
       localStorage.setItem("nexus_keys", JSON.stringify(existingKeys))
-
-      // Log the activity
-      if (user) {
-        logActivity(user.username, "upload_key", `Key: ${keyTitle} | ${keyId}`)
-      }
 
       // Show success message
       setMessage({ type: "success", text: "Key uploaded successfully!" })

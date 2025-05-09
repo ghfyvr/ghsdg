@@ -23,25 +23,12 @@ export default function SettingsPage() {
   const [emailMessage, setEmailMessage] = useState({ type: "", text: "" })
   const [showVerificationInput, setShowVerificationInput] = useState(false)
 
-  // Theme customization states
-  const [primaryColor, setPrimaryColor] = useState("#00ff9d")
-  const [secondaryColor, setSecondaryColor] = useState("#00b8ff")
-  const [themeMessage, setThemeMessage] = useState({ type: "", text: "" })
-
   useEffect(() => {
     if (!isLoading && !user) {
       router.push("/login")
     } else if (user && user.email) {
       setEmail(user.email)
       setOriginalEmail(user.email)
-
-      // Load user theme preferences
-      const userTheme = localStorage.getItem(`nexus_theme_${user.username}`)
-      if (userTheme) {
-        const theme = JSON.parse(userTheme)
-        setPrimaryColor(theme.primaryColor || "#00ff9d")
-        setSecondaryColor(theme.secondaryColor || "#00b8ff")
-      }
     }
   }, [user, isLoading, router])
 
@@ -128,49 +115,6 @@ export default function SettingsPage() {
     setEmailMessage({ type: "", text: "" })
   }
 
-  const handleThemeChange = (e: React.FormEvent) => {
-    e.preventDefault()
-    setThemeMessage({ type: "", text: "" })
-
-    if (!user) return
-
-    // Save theme preferences to localStorage
-    const theme = {
-      primaryColor,
-      secondaryColor,
-    }
-    localStorage.setItem(`nexus_theme_${user.username}`, JSON.stringify(theme))
-
-    // Apply theme to CSS variables
-    document.documentElement.style.setProperty("--primary", primaryColor)
-    document.documentElement.style.setProperty("--secondary", secondaryColor)
-    document.documentElement.style.setProperty("--accent", secondaryColor)
-
-    setThemeMessage({
-      type: "success",
-      text: "Theme preferences saved successfully!",
-    })
-  }
-
-  const resetTheme = () => {
-    setPrimaryColor("#00ff9d")
-    setSecondaryColor("#00b8ff")
-
-    // Apply default theme
-    document.documentElement.style.setProperty("--primary", "#00ff9d")
-    document.documentElement.style.setProperty("--secondary", "#00b8ff")
-    document.documentElement.style.setProperty("--accent", "#00a2ff")
-
-    if (user) {
-      localStorage.removeItem(`nexus_theme_${user.username}`)
-    }
-
-    setThemeMessage({
-      type: "success",
-      text: "Theme reset to default!",
-    })
-  }
-
   if (isLoading) {
     return (
       <div className="container mx-auto px-5 py-16">
@@ -229,120 +173,6 @@ export default function SettingsPage() {
               <p className="mt-1 text-xs text-gray-400">Username cannot be changed</p>
             </div>
           </div>
-        </div>
-
-        {/* Theme Customization Section */}
-        <div className="mb-8 rounded-lg border-l-4 border-[#00ff9d] bg-[#1a1a1a] p-8">
-          <h2 className="mb-6 text-2xl font-bold text-white">Theme Customization</h2>
-
-          {themeMessage.text && (
-            <div
-              className={`mb-6 rounded p-4 ${
-                themeMessage.type === "error" ? "bg-red-900/30 text-red-200" : "bg-green-900/30 text-green-200"
-              }`}
-            >
-              {themeMessage.text}
-            </div>
-          )}
-
-          <form onSubmit={handleThemeChange}>
-            <div className="mb-4">
-              <label htmlFor="primaryColor" className="mb-2 block font-medium text-[#00ff9d]">
-                Primary Color
-              </label>
-              <div className="flex gap-4">
-                <input
-                  type="color"
-                  id="primaryColor"
-                  value={primaryColor}
-                  onChange={(e) => setPrimaryColor(e.target.value)}
-                  className="h-10 w-10 cursor-pointer rounded border-0"
-                />
-                <input
-                  type="text"
-                  value={primaryColor}
-                  onChange={(e) => setPrimaryColor(e.target.value)}
-                  className="w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#00ff9d] focus:outline-none focus:ring-1 focus:ring-[#00ff9d]"
-                />
-              </div>
-              <p className="mt-1 text-xs text-gray-400">Used for buttons, borders, and highlights</p>
-            </div>
-
-            <div className="mb-6">
-              <label htmlFor="secondaryColor" className="mb-2 block font-medium text-[#00ff9d]">
-                Secondary Color
-              </label>
-              <div className="flex gap-4">
-                <input
-                  type="color"
-                  id="secondaryColor"
-                  value={secondaryColor}
-                  onChange={(e) => setSecondaryColor(e.target.value)}
-                  className="h-10 w-10 cursor-pointer rounded border-0"
-                />
-                <input
-                  type="text"
-                  value={secondaryColor}
-                  onChange={(e) => setSecondaryColor(e.target.value)}
-                  className="w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#00ff9d] focus:outline-none focus:ring-1 focus:ring-[#00ff9d]"
-                />
-              </div>
-              <p className="mt-1 text-xs text-gray-400">Used for gradients and secondary elements</p>
-            </div>
-
-            <div className="mb-4">
-              <label className="mb-2 block font-medium text-[#00ff9d]">Preview</label>
-              <div className="mb-4 flex flex-col gap-4 rounded-lg border border-white/10 bg-[#050505] p-4">
-                <div className="flex gap-4">
-                  <div className="h-10 w-24 rounded" style={{ background: primaryColor }}></div>
-                  <div className="h-10 w-24 rounded" style={{ background: secondaryColor }}></div>
-                  <div
-                    className="h-10 w-24 rounded"
-                    style={{ background: `linear-gradient(to right, ${primaryColor}, ${secondaryColor})` }}
-                  ></div>
-                </div>
-                <div className="flex gap-4">
-                  <button
-                    type="button"
-                    className="rounded px-4 py-2 text-[#050505]"
-                    style={{ background: primaryColor }}
-                  >
-                    Primary Button
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded px-4 py-2 text-[#050505]"
-                    style={{ background: secondaryColor }}
-                  >
-                    Secondary Button
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded px-4 py-2 text-[#050505]"
-                    style={{ background: `linear-gradient(to right, ${primaryColor}, ${secondaryColor})` }}
-                  >
-                    Gradient Button
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <button
-                type="submit"
-                className="flex-1 rounded bg-gradient-to-r from-[#00ff9d] to-[#00b8ff] px-4 py-3 font-semibold text-[#050505] transition-all hover:shadow-lg hover:shadow-[#00ff9d]/20"
-              >
-                <i className="fas fa-save mr-2"></i> Save Theme
-              </button>
-              <button
-                type="button"
-                onClick={resetTheme}
-                className="rounded border border-white/10 bg-[#050505] px-4 py-3 font-semibold text-white transition-all hover:bg-[#1a1a1a]"
-              >
-                <i className="fas fa-undo mr-2"></i> Reset to Default
-              </button>
-            </div>
-          </form>
         </div>
 
         {/* Email Verification Section */}
