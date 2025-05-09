@@ -1,0 +1,39 @@
+:root {
+  --primary-color: #00ff9d;
+  --secondary-color: #00b8ff;
+}
+
+/* Theme classes */
+.theme-primary-bg {
+  background-color: var(--primary-color) !important;
+}
+
+.theme-secondary-bg {
+  background-color: var(--secondary-color) !important;
+}
+
+.theme-gradient-bg {
+  background-image: linear-gradient(to right, var(--primary-color), var(--secondary-color)) !important;
+}
+
+.theme-primary-text {
+  color: var(--primary-color) !important;
+}
+
+.theme-secondary-text {
+  color: var(--secondary-color) !important;
+}
+
+.theme-gradient-text {
+  background-image: linear-gradient(to right, var(--primary-color), var(--secondary-color)) !important;
+  -webkit-background-clip: text !important;
+  color: transparent !important;
+}
+
+.theme-primary-border {
+  border-color: var(--primary-color) !important;
+}
+
+.theme-secondary-border {
+  border-color: var(--secondary-color) !important;
+}

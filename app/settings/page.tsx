@@ -38,9 +38,13 @@ export default function SettingsPage() {
       // Load user theme preferences
       const userTheme = localStorage.getItem(`nexus_theme_${user.username}`)
       if (userTheme) {
-        const theme = JSON.parse(userTheme)
-        setPrimaryColor(theme.primaryColor || "#00ff9d")
-        setSecondaryColor(theme.secondaryColor || "#00b8ff")
+        try {
+          const theme = JSON.parse(userTheme)
+          setPrimaryColor(theme.primaryColor || "#00ff9d")
+          setSecondaryColor(theme.secondaryColor || "#00b8ff")
+        } catch (error) {
+          console.error("Error parsing theme:", error)
+        }
       }
     }
   }, [user, isLoading, router])
@@ -128,28 +132,99 @@ export default function SettingsPage() {
     setEmailMessage({ type: "", text: "" })
   }
 
+  // Apply theme function
+  const applyTheme = (primaryColor: string, secondaryColor: string) => {
+    // Create a style element for global CSS variables
+    let styleElement = document.getElementById("user-theme-style")
+    if (!styleElement) {
+      styleElement = document.createElement("style")
+      styleElement.id = "user-theme-style"
+      document.head.appendChild(styleElement)
+    }
+
+    styleElement.textContent = `
+      :root {
+        --primary-color: ${primaryColor};
+        --secondary-color: ${secondaryColor};
+      }
+      
+      .bg-gradient-primary {
+        background-image: linear-gradient(to right, ${primaryColor}, ${secondaryColor}) !important;
+      }
+      
+      .text-gradient-primary {
+        background-image: linear-gradient(to right, ${primaryColor}, ${secondaryColor}) !important;
+        -webkit-background-clip: text !important;
+        color: transparent !important;
+      }
+      
+      /* Override specific classes */
+      .from-\\[\\#00ff9d\\] {
+        --tw-gradient-from: ${primaryColor} var(--tw-gradient-from-position) !important;
+        --tw-gradient-to: rgb(0 255 157 / 0) var(--tw-gradient-to-position) !important;
+        --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+      }
+      
+      .to-\\[\\#00b8ff\\] {
+        --tw-gradient-to: ${secondaryColor} var(--tw-gradient-to-position) !important;
+      }
+      
+      .border-\\[\\#00ff9d\\] {
+        border-color: ${primaryColor} !important;
+      }
+      
+      .text-\\[\\#00ff9d\\] {
+        color: ${primaryColor} !important;
+      }
+      
+      .focus\\:border-\\[\\#00ff9d\\]:focus {
+        border-color: ${primaryColor} !important;
+      }
+      
+      .focus\\:ring-\\[\\#00ff9d\\]:focus {
+        --tw-ring-color: ${primaryColor} !important;
+      }
+      
+      .hover\\:shadow-\\[\\#00ff9d\\]\\/20:hover {
+        --tw-shadow-color: ${primaryColor}33 !important;
+        box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
+      }
+    `
+  }
+
   const handleThemeChange = (e: React.FormEvent) => {
     e.preventDefault()
     setThemeMessage({ type: "", text: "" })
 
     if (!user) return
 
-    // Save theme preferences to localStorage
-    const theme = {
-      primaryColor,
-      secondaryColor,
+    try {
+      // Save theme preferences to localStorage
+      const theme = {
+        primaryColor,
+        secondaryColor,
+      }
+      localStorage.setItem(`nexus_theme_${user.username}`, JSON.stringify(theme))
+
+      // Apply theme
+      applyTheme(primaryColor, secondaryColor)
+
+      setThemeMessage({
+        type: "success",
+        text: "Theme preferences saved successfully! The changes will be applied across the site.",
+      })
+
+      // Force a refresh to apply the theme to all elements
+      setTimeout(() => {
+        window.location.reload()
+      }, 1500)
+    } catch (error) {
+      console.error("Error saving theme:", error)
+      setThemeMessage({
+        type: "error",
+        text: "An error occurred while saving theme preferences.",
+      })
     }
-    localStorage.setItem(`nexus_theme_${user.username}`, JSON.stringify(theme))
-
-    // Apply theme to CSS variables
-    document.documentElement.style.setProperty("--primary", primaryColor)
-    document.documentElement.style.setProperty("--secondary", secondaryColor)
-    document.documentElement.style.setProperty("--accent", secondaryColor)
-
-    setThemeMessage({
-      type: "success",
-      text: "Theme preferences saved successfully!",
-    })
   }
 
   const resetTheme = () => {
@@ -157,9 +232,7 @@ export default function SettingsPage() {
     setSecondaryColor("#00b8ff")
 
     // Apply default theme
-    document.documentElement.style.setProperty("--primary", "#00ff9d")
-    document.documentElement.style.setProperty("--secondary", "#00b8ff")
-    document.documentElement.style.setProperty("--accent", "#00a2ff")
+    applyTheme("#00ff9d", "#00b8ff")
 
     if (user) {
       localStorage.removeItem(`nexus_theme_${user.username}`)
@@ -167,8 +240,13 @@ export default function SettingsPage() {
 
     setThemeMessage({
       type: "success",
-      text: "Theme reset to default!",
+      text: "Theme reset to default! The changes will be applied after page refresh.",
     })
+
+    // Force a refresh to apply the theme to all elements
+    setTimeout(() => {
+      window.location.reload()
+    }, 1500)
   }
 
   if (isLoading) {
@@ -325,6 +403,9 @@ export default function SettingsPage() {
                   </button>
                 </div>
               </div>
+              <p className="mt-1 text-xs text-gray-400">
+                Note: After saving, the page will refresh to apply your theme across the site.
+              </p>
             </div>
 
             <div className="flex gap-4">
