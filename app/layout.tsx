@@ -6,6 +6,7 @@ import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { AuthProvider } from "@/components/auth-provider"
 import { BanNotification } from "@/components/ban-notification"
+import { AdminPanelToggle } from "@/components/admin-panel-toggle"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -28,6 +29,7 @@ export default function RootLayout({
             <div className="flex min-h-screen flex-col">
               <Header />
               <BanNotification />
+              <AdminPanelToggle />
               <main className="flex-1">{children}</main>
               <Footer />
             </div>
