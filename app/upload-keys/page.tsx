@@ -38,23 +38,32 @@ export default function UploadKeysPage() {
     if (isLoading) return
 
     if (!user) {
-      router.push("/login")
-    } else {
-      // Check if user is admin
-      const checkAdminStatus = async () => {
-        try {
-          const adminStatus = await isAdmin(user.username)
-          setUserIsAdmin(adminStatus)
-        } catch (error) {
-          console.error("Error checking admin status:", error)
-          setUserIsAdmin(false)
-        } finally {
-          setAdminCheckComplete(true)
-        }
-      }
-
-      checkAdminStatus()
+      window.location.href = "/login"
+      return
     }
+
+    // Check if user is admin
+    const checkAdminStatus = async () => {
+      try {
+        const adminStatus = await isAdmin(user.username)
+        setUserIsAdmin(adminStatus)
+
+        // If not admin, redirect to home
+        if (!adminStatus) {
+          console.log("User is not admin, redirecting...")
+          setTimeout(() => {
+            window.location.href = "/"
+          }, 500)
+        }
+      } catch (error) {
+        console.error("Error checking admin status:", error)
+        setUserIsAdmin(false)
+      } finally {
+        setAdminCheckComplete(true)
+      }
+    }
+
+    checkAdminStatus()
   }, [user, isLoading, router])
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {

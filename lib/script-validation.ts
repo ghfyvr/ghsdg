@@ -16,7 +16,18 @@ export const validateScript = (code: string): string[] => {
   }
 
   // Check for banned words
-  const bannedWords = ["workink", "lootdest", "lootlabs", "linkvertise"]
+  const bannedWords = [
+    "workink",
+    "lootdest",
+    "lootlabs",
+    "linkvertise",
+    "eval(",
+    "Function(",
+    "setTimeout(",
+    "setInterval(",
+    "document.cookie",
+    "localStorage.setItem",
+  ]
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim().toLowerCase()
@@ -39,6 +50,11 @@ export const validateScript = (code: string): string[] => {
       errors.push(
         `Line ${i + 1}: Contains a link without a valid keyword (loadstring, require, local, then, or if). Script is not allowed.`,
       )
+    }
+
+    // Check for potential XSS attacks
+    if (line.includes("<script>") || line.includes("</script>") || line.includes("javascript:")) {
+      errors.push(`Line ${i + 1}: Contains potentially malicious code. Script is not allowed.`)
     }
   }
 

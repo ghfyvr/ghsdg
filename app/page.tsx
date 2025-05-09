@@ -9,9 +9,7 @@ export default function HomePage() {
   return (
     <div className="container mx-auto px-5 py-16">
       <div className="mx-auto max-w-4xl text-center">
-        <h1 className="mb-6 text-5xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#00ff9d] to-[#00b8ff]">
-          Welcome to NEXUS
-        </h1>
+        <h1 className="mb-6 text-5xl font-bold tracking-tight rgb-gradient-text">Welcome to NEXUS</h1>
 
         <p className="mb-10 text-xl text-gray-300">
           The ultimate platform for script sharing with a cyberpunk aesthetic
@@ -32,7 +30,7 @@ export default function HomePage() {
           <div className="mb-12 flex flex-col gap-4 sm:flex-row sm:justify-center">
             <Link
               href="/signup"
-              className="inline-flex items-center rounded bg-gradient-to-r from-[#00ff9d] to-[#00b8ff] px-6 py-3 font-semibold text-[#050505] transition-all hover:shadow-lg hover:shadow-[#00ff9d]/20"
+              className="inline-flex items-center rounded rgb-button px-6 py-3 font-semibold text-white transition-all hover:shadow-lg"
             >
               <i className="fas fa-user-plus mr-2"></i> Create Account
             </Link>

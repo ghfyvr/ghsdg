@@ -59,8 +59,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(false)
   }, [])
 
+  // Enhance security in the auth hooks
+
+  // Add this function to sanitize user input
+  const sanitizeInput = (input: string): string => {
+    return input.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;")
+  }
+
+  // Modify the login function to use sanitized inputs
   const login = async (username: string, password: string) => {
     try {
+      // Sanitize inputs
+      const sanitizedUsername = sanitizeInput(username)
+
       // Find user by username (case-insensitive)
       const allStoredKeys = Object.keys(localStorage)
       let userKey = null
@@ -68,7 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       for (const key of allStoredKeys) {
         if (key.startsWith("nexus_user_")) {
           const storedUsername = key.replace("nexus_user_", "")
-          if (storedUsername.toLowerCase() === username.toLowerCase()) {
+          if (storedUsername.toLowerCase() === sanitizedUsername.toLowerCase()) {
             userKey = key
             break
           }

@@ -107,9 +107,9 @@ export default function SignupPage() {
       // Show success message
       setMessage({ type: "success", text: "Account created successfully! Redirecting..." })
 
-      // Redirect to scripts page after a short delay
+      // Redirect to scripts page and force refresh
       setTimeout(() => {
-        router.push("/scripts")
+        window.location.href = "/scripts"
       }, 1500)
     } catch (error) {
       console.error("Signup error:", error)

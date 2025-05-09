@@ -34,7 +34,7 @@ export default function LoginPage() {
       const success = await login(username, password)
 
       if (success) {
-        router.push("/scripts")
+        window.location.href = "/"
       } else {
         setError("Invalid username or password")
       }
