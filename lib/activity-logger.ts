@@ -1,115 +1,73 @@
-type ActivityAction =
-  | "login"
-  | "signup"
-  | "upload_script"
-  | "upload_key"
-  | "ban"
-  | "unban"
-  | "view_script"
-  | "download_key"
-  | "report"
-  | "admin_action"
-
-interface ActivityLog {
-  timestamp: string
-  username: string
-  action: ActivityAction
-  details: string
-  ip?: string
-  userAgent?: string
-}
-
-export function logActivity(username: string, action: ActivityAction, details: string) {
+/**
+ * Logs user activity to localStorage
+ * @param username The username of the user
+ * @param action The action being performed
+ * @param details Additional details about the action
+ */
+export function logActivity(username: string, action: string, details: string) {
   try {
-    // Create log entry
-    const logEntry: ActivityLog = {
-      timestamp: new Date().toISOString(),
+    const logs = JSON.parse(localStorage.getItem("nexus_activity_logs") || "[]")
+
+    logs.unshift({
       username,
       action,
       details,
-      userAgent: navigator.userAgent,
-    }
+      timestamp: new Date().toISOString(),
+    })
 
-    // Get existing logs
-    const existingLogs: ActivityLog[] = JSON.parse(localStorage.getItem("nexus_activity_logs") || "[]")
+    // Keep only the last 100 logs to prevent localStorage from getting too large
+    const trimmedLogs = logs.slice(0, 100)
 
-    // Add new log at the beginning (most recent first)
-    existingLogs.unshift(logEntry)
-
-    // Keep only the last 1000 logs to prevent localStorage from getting too large
-    const trimmedLogs = existingLogs.slice(0, 1000)
-
-    // Save back to localStorage
     localStorage.setItem("nexus_activity_logs", JSON.stringify(trimmedLogs))
 
-    // Send webhook if it's a script upload or key upload
-    if (action === "upload_script" || action === "upload_key") {
-      sendWebhook(logEntry)
-    }
+    // If there's a webhook URL, send the notification for script uploads
+    if (action === "upload_script") {
+      const webhookUrl = localStorage.getItem("nexus_webhook_url")
+      if (webhookUrl) {
+        // Extract game name and script info from details
+        const scriptInfo = details.split(":")[1]?.trim() || "Unknown script"
+        const gameMatch = scriptInfo.match(/for\s+(.+?)(?:\s+by|\s*$)/)
+        const gameName = gameMatch ? gameMatch[1] : "Unknown game"
 
-    return true
+        // Send webhook notification
+        fetch(webhookUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            content: null,
+            embeds: [
+              {
+                title: "New Script Uploaded",
+                description: scriptInfo,
+                color: 3066993,
+                fields: [
+                  {
+                    name: "Game Name",
+                    value: gameName,
+                    inline: true,
+                  },
+                  {
+                    name: "Uploaded By",
+                    value: username,
+                    inline: true,
+                  },
+                  {
+                    name: "Page Link",
+                    value: `${window.location.origin}/scripts`,
+                  },
+                ],
+                timestamp: new Date().toISOString(),
+              },
+            ],
+          }),
+        }).catch((error) => {
+          console.error("Error sending webhook notification:", error)
+        })
+      }
+    }
   } catch (error) {
     console.error("Error logging activity:", error)
-    return false
-  }
-}
-
-export function sendWebhook(logEntry: ActivityLog) {
-  const webhookUrl = localStorage.getItem("nexus_webhook_url")
-
-  if (!webhookUrl) return
-
-  try {
-    // Format the message based on the action type
-    let content = ""
-
-    if (logEntry.action === "upload_script") {
-      // Parse the details to get script info
-      const detailsParts = logEntry.details.split(" | ")
-      const scriptTitle = detailsParts[0].replace("Script: ", "")
-      const gameInfo = detailsParts[1] || "Unknown Game"
-      const scriptId = detailsParts[2] || ""
-
-      content = `
-**New Script Uploaded**
-Game: ${gameInfo}
-Script Uploaded By: ${logEntry.username}
-Script Title: ${scriptTitle}
-Page Link: ${window.location.origin}/scripts/${scriptId}
-      `
-    } else if (logEntry.action === "upload_key") {
-      // Parse the details to get key info
-      const detailsParts = logEntry.details.split(" | ")
-      const keyTitle = detailsParts[0].replace("Key: ", "")
-      const keyId = detailsParts[1] || ""
-
-      content = `
-**New Key Uploaded**
-Key Uploaded By: ${logEntry.username}
-Key Title: ${keyTitle}
-Page Link: ${window.location.origin}/key-generator/${keyId}
-      `
-    } else {
-      // Generic message for other actions
-      content = `
-**${logEntry.action.replace("_", " ")}**
-User: ${logEntry.username}
-Details: ${logEntry.details}
-Time: ${new Date(logEntry.timestamp).toLocaleString()}
-      `
-    }
-
-    // Send the webhook
-    fetch(webhookUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ content }),
-    }).catch((error) => {
-      console.error("Error sending webhook:", error)
-    })
-  } catch (error) {
-    console.error("Error formatting webhook message:", error)
   }
 }

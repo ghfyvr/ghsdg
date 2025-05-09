@@ -56,7 +56,7 @@ export default function KeyGeneratorPage() {
           setUserIsAdmin(adminStatus)
 
           // Log activity
-          logActivity(user.username, "view_script", "Viewed key generator page")
+          logActivity(user.username, "view_page", "Viewed key generator page")
         } catch (error) {
           console.error("Error checking admin status:", error)
           setUserIsAdmin(false)
@@ -213,11 +213,6 @@ export default function KeyGeneratorPage() {
                 key={key.id}
                 href={`/key-generator/${key.id}`}
                 className="group overflow-hidden rounded-lg border border-white/10 bg-[#1a1a1a] transition-all hover:border-[#00c6ed]/30 hover:shadow-lg hover:shadow-[#00c6ed]/5"
-                onClick={() => {
-                  if (user) {
-                    logActivity(user.username, "view_script", `Viewed key: ${key.title}`)
-                  }
-                }}
               >
                 <div className="relative h-48 w-full overflow-hidden">
                   <Image
