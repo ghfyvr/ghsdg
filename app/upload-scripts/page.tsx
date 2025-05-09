@@ -47,15 +47,40 @@ export default function UploadScriptsPage() {
   const [showCategories, setShowCategories] = useState(false)
   const [isNexusTeamMember, setIsNexusTeamMember] = useState(false)
   const [uploadAsTeam, setUploadAsTeam] = useState(false)
+  const [userIsAdmin, setUserIsAdmin] = useState(false)
+  const [adminCheckComplete, setAdminCheckComplete] = useState(false)
   const categoriesRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (isLoading) return
+
+    if (!user) {
       router.push("/login")
-    } else if (user) {
-      // Check if user is a Nexus Team member
-      const nexusTeamUsernames = ["Nexus", "Nexus.", "Voltrex"]
-      setIsNexusTeamMember(nexusTeamUsernames.includes(user.username))
+    } else {
+      // Check if user is banned
+      const userData = JSON.parse(localStorage.getItem(`nexus_user_${user.username}`) || "{}")
+      if (userData.isBanned) {
+        setMessage({
+          type: "error",
+          text: "Your account has been banned. You cannot upload scripts.",
+        })
+        return
+      }
+
+      // Check if user is admin
+      const checkAdminStatus = async () => {
+        try {
+          const adminStatus = await isAdmin(user.username)
+          setUserIsAdmin(adminStatus)
+        } catch (error) {
+          console.error("Error checking admin status:", error)
+          setUserIsAdmin(false)
+        } finally {
+          setAdminCheckComplete(true)
+        }
+      }
+
+      checkAdminStatus()
     }
   }, [user, isLoading, router])
 
@@ -154,6 +179,18 @@ export default function UploadScriptsPage() {
     e.preventDefault()
     setMessage({ type: "", text: "" })
     setValidationErrors([])
+
+    // Check if user is banned
+    if (user) {
+      const userData = JSON.parse(localStorage.getItem(`nexus_user_${user.username}`) || "{}")
+      if (userData.isBanned) {
+        setMessage({
+          type: "error",
+          text: "Your account has been banned. You cannot upload scripts.",
+        })
+        return
+      }
+    }
 
     if (!scriptTitle || !scriptDescription || !scriptCode) {
       setMessage({ type: "error", text: "Script title, description, and code are required" })
@@ -557,4 +594,10 @@ export default function UploadScriptsPage() {
       </div>
     </div>
   )
+}
+
+async function isAdmin(username: string): Promise<boolean> {
+  // Replace with your actual admin check logic (e.g., fetching from a database)
+  // This is just a placeholder
+  return username === "Nexus"
 }

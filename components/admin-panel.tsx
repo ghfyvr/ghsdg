@@ -15,6 +15,9 @@ type UserData = {
   hwid?: string
   bannedReason?: string
   isBanned?: boolean
+  banExpiration?: string | null
+  browser?: string
+  os?: string
 }
 
 type BanOptions = {
@@ -38,6 +41,8 @@ export function AdminPanel({ username }: { username: string }) {
   const [banReason, setBanReason] = useState("")
   const [newUsername, setNewUsername] = useState("")
   const [connectedAccounts, setConnectedAccounts] = useState<string[]>([])
+  const [banDuration, setBanDuration] = useState("permanent")
+  const [customBanReason, setCustomBanReason] = useState("")
 
   useEffect(() => {
     const checkAdminStatus = async () => {
@@ -75,6 +80,9 @@ export function AdminPanel({ username }: { username: string }) {
             hwid: hwid,
             isBanned: parsedUserData.isBanned,
             bannedReason: parsedUserData.bannedReason,
+            banExpiration: parsedUserData.banExpiration,
+            browser: parsedUserData.browser,
+            os: parsedUserData.os,
           })
         }
 
@@ -114,11 +122,24 @@ export function AdminPanel({ username }: { username: string }) {
   const handleBanUser = () => {
     if (!userData) return
 
+    // Calculate ban expiration date if not permanent
+    let banExpiration = null
+    if (banDuration !== "permanent") {
+      const days = Number.parseInt(banDuration.replace("d", ""))
+      const expirationDate = new Date()
+      expirationDate.setDate(expirationDate.getDate() + days)
+      banExpiration = expirationDate.toISOString()
+    }
+
+    // Get the final ban reason
+    const finalBanReason = banReason === "Custom" ? customBanReason : banReason
+
     // Update user data with ban information
     const updatedUserData = {
       ...userData,
       isBanned: true,
-      bannedReason: banReason || "Violation of terms of service",
+      bannedReason: finalBanReason || "Violation of terms of service",
+      banExpiration: banExpiration,
     }
 
     // Save updated user data
@@ -128,7 +149,8 @@ export function AdminPanel({ username }: { username: string }) {
       JSON.stringify({
         ...JSON.parse(localStorage.getItem(`nexus_user_${username}`) || "{}"),
         isBanned: true,
-        bannedReason: banReason || "Violation of terms of service",
+        bannedReason: finalBanReason || "Violation of terms of service",
+        banExpiration: banExpiration,
       }),
     )
 
@@ -249,6 +271,26 @@ export function AdminPanel({ username }: { username: string }) {
     alert(`Script has been removed successfully.`)
   }
 
+  const handleToggleScriptVisibility = (scriptId: string) => {
+    // Get all scripts
+    const allScripts = JSON.parse(localStorage.getItem("nexus_scripts") || "[]")
+
+    // Find the script by ID
+    const scriptIndex = allScripts.findIndex((script: any) => script.id === scriptId)
+
+    if (scriptIndex !== -1) {
+      // Toggle the isHidden property
+      allScripts[scriptIndex].isHidden = !allScripts[scriptIndex].isHidden
+
+      // Save back to localStorage
+      localStorage.setItem("nexus_scripts", JSON.stringify(allScripts))
+
+      alert(
+        `Script "${allScripts[scriptIndex].title}" is now ${allScripts[scriptIndex].isHidden ? "hidden" : "visible"}`,
+      )
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-4">
@@ -341,17 +383,47 @@ export function AdminPanel({ username }: { username: string }) {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="banReason" className="mb-2 block text-sm font-medium text-gray-300">
-                Ban Reason
-              </label>
-              <textarea
-                id="banReason"
+              <label className="mb-2 block text-sm font-medium text-gray-300">Ban Duration</label>
+              <select
+                value={banDuration}
+                onChange={(e) => setBanDuration(e.target.value)}
+                className="w-full rounded border border-white/10 bg-[#050505] px-4 py-2 text-white"
+              >
+                <option value="permanent">Permanent</option>
+                <option value="1d">1 Day</option>
+                <option value="3d">3 Days</option>
+                <option value="7d">7 Days</option>
+                <option value="14d">14 Days</option>
+                <option value="30d">30 Days</option>
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <label className="mb-2 block text-sm font-medium text-gray-300">Ban Reason</label>
+              <select
                 value={banReason}
                 onChange={(e) => setBanReason(e.target.value)}
-                className="w-full rounded border border-white/10 bg-[#050505] px-4 py-2 text-white"
-                rows={3}
-                placeholder="Enter reason for ban..."
-              ></textarea>
+                className="w-full rounded border border-white/10 bg-[#050505] px-4 py-2 text-white mb-2"
+              >
+                <option value="">Select a reason...</option>
+                <option value="Violation of terms of service">Violation of terms of service</option>
+                <option value="Inappropriate content">Inappropriate content</option>
+                <option value="Malicious scripts">Malicious scripts</option>
+                <option value="Spamming">Spamming</option>
+                <option value="Harassment">Harassment</option>
+                <option value="Multiple accounts">Multiple accounts</option>
+                <option value="Scamming">Scamming</option>
+                <option value="Custom">Custom reason</option>
+              </select>
+              {banReason === "Custom" && (
+                <textarea
+                  value={customBanReason}
+                  onChange={(e) => setCustomBanReason(e.target.value)}
+                  className="w-full rounded border border-white/10 bg-[#050505] px-4 py-2 text-white"
+                  rows={3}
+                  placeholder="Enter custom ban reason..."
+                ></textarea>
+              )}
             </div>
 
             <div className="flex justify-end gap-3">
@@ -431,10 +503,10 @@ export function AdminPanel({ username }: { username: string }) {
                     <span className="text-gray-400">Last Login:</span> {new Date().toLocaleString()}
                   </li>
                   <li>
-                    <span className="text-gray-400">Browser:</span> Chrome 123.0.0.0
+                    <span className="text-gray-400">Browser:</span> {userData.browser || "Unknown"}
                   </li>
                   <li>
-                    <span className="text-gray-400">OS:</span> Windows 11
+                    <span className="text-gray-400">OS:</span> {userData.os || "Unknown"}
                   </li>
                 </ul>
               </div>
@@ -461,6 +533,7 @@ export function AdminPanel({ username }: { username: string }) {
               )}
             </div>
 
+            {/* User Scripts Management */}
             <div className="mt-4 rounded border border-white/10 bg-[#050505] p-4">
               <h4 className="mb-4 font-medium text-[#00c6ed]">User Scripts Management</h4>
 
@@ -505,6 +578,16 @@ export function AdminPanel({ username }: { username: string }) {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleToggleScriptVisibility(script.id)}
+                            className={`rounded px-2 py-1 text-xs font-medium ${
+                              script.isHidden
+                                ? "bg-yellow-600 text-white hover:bg-yellow-700"
+                                : "bg-gray-600 text-white hover:bg-gray-700"
+                            }`}
+                          >
+                            {script.isHidden ? "Unhide Script" : "Hide Script"}
+                          </button>
                           <button
                             onClick={() => handleRemoveScript(script.id)}
                             className="rounded bg-red-600 px-2 py-1 text-xs font-medium text-white hover:bg-red-700"

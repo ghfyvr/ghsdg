@@ -19,6 +19,7 @@ type Key = {
   dislikes: string[]
   isPremium?: boolean
   isNexusTeam?: boolean
+  isHidden?: boolean
 }
 
 export default function KeyGeneratorPage() {
@@ -44,20 +45,29 @@ export default function KeyGeneratorPage() {
 
       // Save back to localStorage with the new properties
       localStorage.setItem("nexus_keys", JSON.stringify(markedKeys))
-      setKeys(markedKeys)
+
+      // Check if user is admin
+      if (user) {
+        const adminStatus = await isAdmin(user.username)
+        setUserIsAdmin(adminStatus)
+
+        // If user is not admin, filter out hidden keys
+        if (!adminStatus) {
+          const visibleKeys = markedKeys.filter((key: Key) => !key.isHidden)
+          setKeys(visibleKeys)
+        } else {
+          setKeys(markedKeys)
+        }
+      } else {
+        // For non-logged in users, filter out hidden keys
+        const visibleKeys = markedKeys.filter((key: Key) => !key.isHidden)
+        setKeys(visibleKeys)
+      }
+
       setIsLoading(false)
     }
 
     markNexusTeamKeys()
-
-    // Check if user is admin
-    if (user) {
-      const checkAdminStatus = async () => {
-        const adminStatus = await isAdmin(user.username)
-        setUserIsAdmin(adminStatus)
-      }
-      checkAdminStatus()
-    }
   }, [user])
 
   // Filter keys based on search
@@ -96,6 +106,13 @@ export default function KeyGeneratorPage() {
 
   const handleLikeDislike = (keyId: string, action: "like" | "dislike") => {
     if (!user) return
+
+    // Check if user is banned
+    const userData = JSON.parse(localStorage.getItem(`nexus_user_${user.username}`) || "{}")
+    if (userData.isBanned) {
+      alert("Your account has been banned. You cannot like or dislike keys.")
+      return
+    }
 
     // Create a copy of all keys
     const allKeys = [...keys]
@@ -241,6 +258,11 @@ export default function KeyGeneratorPage() {
                 {key.isPremium && !key.isNexusTeam && (
                   <div className="absolute top-2 right-2 rounded bg-[#BA55D3] px-2 py-1 text-xs font-bold text-white">
                     PREMIUM
+                  </div>
+                )}
+                {key.isHidden && userIsAdmin && (
+                  <div className="absolute top-2 left-2 rounded bg-yellow-600 px-2 py-1 text-xs font-bold text-white">
+                    HIDDEN
                   </div>
                 )}
               </div>

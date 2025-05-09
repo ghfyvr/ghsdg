@@ -30,6 +30,7 @@ type Script = {
   views?: number
   isPremium?: boolean
   isNexusTeam?: boolean
+  isHidden?: boolean
 }
 
 export default function ScriptsPage() {
@@ -46,39 +47,28 @@ export default function ScriptsPage() {
     // Load scripts from localStorage
     const storedScripts = JSON.parse(localStorage.getItem("nexus_scripts") || "[]")
 
-    // Add view count if not present
-    const scriptsWithViews = storedScripts.map((script: Script) => {
-      if (script.views === undefined) {
-        return { ...script, views: Math.floor(Math.random() * 100) }
-      }
-      return script
-    })
-
-    // Mark scripts from Nexus Team members
-    const markNexusTeamScripts = async () => {
-      const markedScripts = await Promise.all(
-        scriptsWithViews.map(async (script: Script) => {
-          const isNexusTeam = await isAdmin(script.author)
-          return { ...script, isNexusTeam }
-        }),
-      )
-
-      // Save back to localStorage with the new properties
-      localStorage.setItem("nexus_scripts", JSON.stringify(markedScripts))
-
-      setScripts(markedScripts)
-      setIsLoading(false)
-    }
-
-    markNexusTeamScripts()
-
     // Check if current user is admin
     if (user) {
       const checkAdminStatus = async () => {
         const adminStatus = await isAdmin(user.username)
         setUserIsAdmin(adminStatus)
+
+        // If user is not admin, filter out hidden scripts
+        if (!adminStatus) {
+          const visibleScripts = storedScripts.filter((script: Script) => !script.isHidden)
+          setScripts(visibleScripts)
+        } else {
+          setScripts(storedScripts)
+        }
+
+        setIsLoading(false)
       }
       checkAdminStatus()
+    } else {
+      // For non-logged in users, filter out hidden scripts
+      const visibleScripts = storedScripts.filter((script: Script) => !script.isHidden)
+      setScripts(visibleScripts)
+      setIsLoading(false)
     }
   }, [user])
 

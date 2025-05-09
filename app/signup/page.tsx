@@ -13,6 +13,10 @@ export default function SignupPage() {
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const [message, setMessage] = useState<{ type: "success" | "error" | null; text: string | null }>({
+    type: null,
+    text: null,
+  })
 
   const validateUsername = (username: string): string | null => {
     if (username.length < 3 || username.length > 20) {
@@ -42,6 +46,7 @@ export default function SignupPage() {
     e.preventDefault()
     setError("")
     setIsLoading(true)
+    setMessage({ type: null, text: null })
 
     try {
       if (!username || !password || !confirmPassword) {
@@ -99,8 +104,13 @@ export default function SignupPage() {
       // Auto-login the user
       localStorage.setItem("nexus_current_user", username)
 
-      // Redirect to scripts page
-      router.push("/scripts")
+      // Show success message
+      setMessage({ type: "success", text: "Account created successfully! Redirecting..." })
+
+      // Redirect to scripts page after a short delay
+      setTimeout(() => {
+        router.push("/scripts")
+      }, 1500)
     } catch (error) {
       console.error("Signup error:", error)
       setError("An unexpected error occurred. Please try again.")
@@ -115,6 +125,9 @@ export default function SignupPage() {
         <h1 className="mb-6 text-2xl font-bold text-white">Create an Account</h1>
 
         {error && <div className="mb-4 rounded bg-red-900/30 p-3 text-sm text-red-200">{error}</div>}
+        {message.type === "success" && (
+          <div className="mb-4 rounded bg-green-900/30 p-3 text-sm text-green-200">{message.text}</div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">

@@ -79,12 +79,18 @@ export default function Header() {
               </Link>
             </li>
             <li>
-              <Link
+              <a
                 href="https://discord.gg/ZWCqcuxAv3"
-                className="flex items-center rounded px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-[rgba(0,255,157,0.1)] hover:text-[#00ff9d] hover:after:scale-x-100"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center rounded px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-[rgba(0,255,157,0.1)] hover:text-[#00ff9d] hover:after:scale-x-100 relative group"
               >
-                <i className="fab fa-discord mr-2"></i> Discord
-              </Link>
+                <i className="fab fa-discord mr-2 text-[#5865F2]"></i>
+                <span className="relative">
+                  Discord
+                  <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-[#5865F2] to-[#00ff9d] transition-all duration-300 group-hover:w-full"></span>
+                </span>
+              </a>
             </li>
             <li>
               <Link

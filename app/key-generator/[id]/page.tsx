@@ -19,6 +19,11 @@ type Key = {
   dislikes: string[] // Array of userIds who disliked
   isPremium?: boolean
   isNexusTeam?: boolean
+  game?: {
+    name: string
+    imageUrl: string
+    gameId?: string
+  }
 }
 
 export default function KeyDetailsPage() {
@@ -74,6 +79,13 @@ export default function KeyDetailsPage() {
 
   const handleLikeDislike = (action: "like" | "dislike") => {
     if (!user || !key) return
+
+    // Check if user is banned
+    const userData = JSON.parse(localStorage.getItem(`nexus_user_${user.username}`) || "{}")
+    if (userData.isBanned) {
+      alert("Your account has been banned. You cannot like or dislike keys.")
+      return
+    }
 
     // Create a copy of all keys
     const allKeys = JSON.parse(localStorage.getItem("nexus_keys") || "[]")
@@ -278,6 +290,27 @@ export default function KeyDetailsPage() {
               </div>
             )}
           </div>
+          {key.game && (
+            <div className="mt-4 rounded-lg border border-white/10 bg-[#1a1a1a] p-6">
+              <h2 className="mb-4 text-xl font-bold text-white">Game Information</h2>
+              <div className="flex items-center gap-3">
+                <div className="h-12 w-12 overflow-hidden rounded">
+                  <Image
+                    src={key.game.imageUrl || "/placeholder.svg"}
+                    alt={key.game.name}
+                    width={48}
+                    height={48}
+                    className="h-full w-full object-cover"
+                    quality={100}
+                  />
+                </div>
+                <div>
+                  <h3 className="font-medium text-white">{key.game.name}</h3>
+                  {key.game.gameId && <p className="text-xs text-gray-400">Game ID: {key.game.gameId}</p>}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

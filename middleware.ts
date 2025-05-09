@@ -11,7 +11,7 @@ export function middleware(request: NextRequest) {
 
   // Check if the current path is an admin route
   if (adminRoutes.some((route) => path.startsWith(route))) {
-    // Get the current user from cookies/localStorage
+    // Get the current user from cookies
     const currentUser = request.cookies.get("nexus_current_user")?.value
 
     // If no user is logged in, redirect to login
@@ -19,9 +19,7 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/login", request.url))
     }
 
-    // For additional security, we'll redirect to the home page
-    // The actual admin check will happen client-side with both client and server verification
-    // This is just an additional layer of protection
+    // Continue to the page - the client-side admin check will handle the rest
   }
 
   return NextResponse.next()

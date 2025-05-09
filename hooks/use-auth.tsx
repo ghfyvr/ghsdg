@@ -87,7 +87,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Check if user is banned
       if (userData.isBanned) {
-        return false
+        // Still allow login but the ban notification will show
+        console.log("User is banned:", userData.bannedReason)
       }
 
       setUser({

@@ -54,6 +54,22 @@ export function DiscordAccountSection() {
 
   // Function to handle Discord login/linking
   const handleDiscordAuth = () => {
+    // Check if user is banned
+    if (user) {
+      const userData = JSON.parse(localStorage.getItem(`nexus_user_${user.username}`) || "{}")
+      if (userData.isBanned) {
+        setShowErrorMessage(true)
+        setErrorMessage("Your account has been banned. You cannot link Discord.")
+
+        // Hide error message after 5 seconds
+        setTimeout(() => {
+          setShowErrorMessage(false)
+        }, 5000)
+
+        return
+      }
+    }
+
     setIsLinking(true)
     // Use the same URL as login but with a link parameter
     window.location.href = "/api/discord/login?link=true"

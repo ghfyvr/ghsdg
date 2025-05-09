@@ -8,6 +8,9 @@ import { useAuth } from "@/hooks/use-auth"
 import { isAdmin } from "@/lib/admin"
 import Link from "next/link"
 
+// Add these imports at the top
+import { fetchGameDetailsById, fetchGameDetailsByName } from "@/app/actions/fetch-game-details"
+
 export default function UploadKeysPage() {
   const { user, isLoading } = useAuth()
   const router = useRouter()
@@ -20,6 +23,16 @@ export default function UploadKeysPage() {
   const [adminCheckComplete, setAdminCheckComplete] = useState(false)
   const [isPremium, setIsPremium] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
+
+  // Add these state variables
+  const [gameId, setGameId] = useState("")
+  const [gameName, setGameName] = useState("")
+  const [gameDetails, setGameDetails] = useState<any | null>(null)
+  const [isLoadingGame, setIsLoadingGame] = useState(false)
+  const [gameError, setGameError] = useState("")
+  const [searchMethod, setSearchMethod] = useState<"id" | "name">("id")
+  const [gameSearchResults, setGameSearchResults] = useState<any[]>([])
+  const [showSearchResults, setShowSearchResults] = useState(false)
 
   useEffect(() => {
     if (isLoading) return
@@ -69,6 +82,74 @@ export default function UploadKeysPage() {
     reader.readAsDataURL(file)
   }
 
+  // Add these functions
+  const handleFetchGameDetailsById = async () => {
+    if (!gameId) {
+      setGameError("Please enter a game ID")
+      return
+    }
+
+    setIsLoadingGame(true)
+    setGameError("")
+    setGameDetails(null)
+    setShowSearchResults(false)
+
+    try {
+      const result = await fetchGameDetailsById(gameId)
+
+      if (result.success) {
+        setGameDetails(result.data)
+        // Update the game name field
+        setGameName(result.data.name)
+      } else {
+        setGameError(result.error)
+      }
+    } catch (error) {
+      console.error("Error fetching game details:", error)
+      setGameError("An unexpected error occurred. Please try again.")
+    } finally {
+      setIsLoadingGame(false)
+    }
+  }
+
+  const handleSearchGamesByName = async () => {
+    if (!gameName) {
+      setGameError("Please enter a game name")
+      return
+    }
+
+    setIsLoadingGame(true)
+    setGameError("")
+    setGameDetails(null)
+    setGameSearchResults([])
+
+    try {
+      const result = await fetchGameDetailsByName(gameName)
+
+      if (result.success) {
+        setGameSearchResults(result.data)
+        setShowSearchResults(true)
+      } else {
+        setGameError(result.error)
+      }
+    } catch (error) {
+      console.error("Error searching games:", error)
+      setGameError("An unexpected error occurred. Please try again.")
+    } finally {
+      setIsLoadingGame(false)
+    }
+  }
+
+  const handleSelectGame = (game: any) => {
+    setGameDetails({
+      name: game.name,
+      imageUrl: game.imageUrl,
+      gameId: game.gameId,
+    })
+    setGameId(game.gameId)
+    setShowSearchResults(false)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setMessage({ type: "", text: "" })
@@ -99,6 +180,7 @@ export default function UploadKeysPage() {
         dislikes: [], // Initialize empty dislikes array
         isPremium: isPremium,
         isNexusTeam: true, // Since only admins can upload keys
+        game: gameDetails, // Add game details if available
       }
 
       // Get existing keys from localStorage or initialize empty array
@@ -119,6 +201,9 @@ export default function UploadKeysPage() {
       setKeyCode("")
       setImageUrl("")
       setIsPremium(false)
+      setGameId("")
+      setGameName("")
+      setGameDetails(null)
 
       // Reset file input
       const fileInput = document.getElementById("keyImage") as HTMLInputElement
@@ -196,6 +281,160 @@ export default function UploadKeysPage() {
         )}
 
         <form onSubmit={handleSubmit} className="rounded-lg border-l-4 border-[#00ff9d] bg-[#1a1a1a] p-8">
+          <div className="mb-6">
+            <label className="mb-2 block font-medium text-[#00ff9d]">Game Search</label>
+
+            <div className="mb-4 flex gap-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchMethod("id")
+                  setShowSearchResults(false)
+                }}
+                className={`flex-1 rounded px-4 py-2 ${
+                  searchMethod === "id"
+                    ? "bg-[#00c6ed] text-[#050505] font-semibold"
+                    : "bg-[#050505] text-white border border-white/10"
+                }`}
+              >
+                Search by ID
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchMethod("name")
+                  setShowSearchResults(false)
+                }}
+                className={`flex-1 rounded px-4 py-2 ${
+                  searchMethod === "name"
+                    ? "bg-[#00c6ed] text-[#050505] font-semibold"
+                    : "bg-[#050505] text-white border border-white/10"
+                }`}
+              >
+                Search by Name
+              </button>
+            </div>
+
+            {searchMethod === "id" ? (
+              <div className="mb-4">
+                <label htmlFor="gameId" className="mb-2 block text-sm font-medium text-gray-300">
+                  Game ID
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    id="gameId"
+                    value={gameId}
+                    onChange={(e) => setGameId(e.target.value)}
+                    className="flex-1 rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#00c6ed] focus:outline-none focus:ring-1 focus:ring-[#00c6ed]"
+                    placeholder="Enter Roblox game ID"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleFetchGameDetailsById}
+                    disabled={isLoadingGame}
+                    className="rounded bg-[#00c6ed] px-4 py-3 font-semibold text-[#050505] transition-all hover:bg-[#00b8ff] disabled:opacity-50"
+                  >
+                    {isLoadingGame ? (
+                      <div className="flex items-center gap-2">
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#050505]/20 border-t-[#050505]"></div>
+                        <span>Loading...</span>
+                      </div>
+                    ) : (
+                      "Fetch Game"
+                    )}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="mb-4">
+                <label htmlFor="gameName" className="mb-2 block text-sm font-medium text-gray-300">
+                  Game Name
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    id="gameName"
+                    value={gameName}
+                    onChange={(e) => setGameName(e.target.value)}
+                    className="flex-1 rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#00c6ed] focus:outline-none focus:ring-1 focus:ring-[#00c6ed]"
+                    placeholder="Enter Roblox game name"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSearchGamesByName}
+                    disabled={isLoadingGame}
+                    className="rounded bg-[#00c6ed] px-4 py-3 font-semibold text-[#050505] transition-all hover:bg-[#00b8ff] disabled:opacity-50"
+                  >
+                    {isLoadingGame ? (
+                      <div className="flex items-center gap-2">
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#050505]/20 border-t-[#050505]"></div>
+                        <span>Loading...</span>
+                      </div>
+                    ) : (
+                      "Search Game"
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {gameError && <p className="mt-1 text-sm text-red-400">{gameError}</p>}
+
+            {/* Game search results */}
+            {showSearchResults && gameSearchResults.length > 0 && (
+              <div className="mt-4 max-h-80 overflow-y-auto rounded border border-white/10 bg-[#050505] p-2">
+                <h3 className="mb-2 px-2 text-sm font-medium text-gray-300">Search Results</h3>
+                <div className="space-y-2">
+                  {gameSearchResults.map((game) => (
+                    <div
+                      key={game.gameId}
+                      className="flex cursor-pointer items-center gap-3 rounded p-2 transition-all hover:bg-[#1a1a1a]"
+                      onClick={() => handleSelectGame(game)}
+                    >
+                      <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded">
+                        <img
+                          src={game.imageUrl || "/placeholder.svg"}
+                          alt={game.name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-medium text-white">{game.name}</h4>
+                        <div className="flex items-center gap-4 text-xs text-gray-400">
+                          <span>
+                            <i className="fas fa-thumbs-up mr-1"></i> {game.stats.likes}
+                          </span>
+                          <span>
+                            <i className="fas fa-user mr-1"></i> {game.stats.playing}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {gameDetails && (
+            <div className="mb-6 rounded border border-white/10 bg-[#050505] p-4">
+              <div className="flex items-center gap-4">
+                <div className="h-16 w-16 overflow-hidden rounded">
+                  <img
+                    src={gameDetails.imageUrl || "/placeholder.svg"}
+                    alt={gameDetails.name}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-medium text-white">{gameDetails.name}</h3>
+                  <p className="text-sm text-gray-400">Game ID: {gameDetails.gameId}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="mb-6">
             <label htmlFor="keyTitle" className="mb-2 block font-medium text-[#00ff9d]">
               Key Title
