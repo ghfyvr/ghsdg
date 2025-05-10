@@ -23,45 +23,60 @@ export default function HomePage() {
             <p className="mb-4 text-gray-300">You are now logged in. You can access all features of NEXUS.</p>
             <Link
               href="/scripts"
-              className="inline-flex items-center rounded bg-gradient-to-r from-[#00ff9d] to-[#00b8ff] px-6 py-3 font-semibold text-[#050505] transition-all hover:shadow-lg hover:shadow-[#00ff9d]/20"
+              className="inline-flex items-center rounded bg-gradient-to-r from-[#ff3e3e] to-[#ff0000] px-7 py-4 font-semibold text-white transition-all hover:shadow-lg hover:shadow-[#ff3e3e]/30 button-3d button-glow text-lg relative overflow-hidden group"
             >
-              <i className="fas fa-code mr-2"></i> Browse Scripts
+              <i className="fas fa-code mr-2 group-hover:animate-bounce"></i>
+              <span>Browse Scripts</span>
+              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shine bg-[length:200%_100%]"></span>
             </Link>
           </div>
         ) : (
           <div className="mb-12 flex flex-col gap-4 sm:flex-row sm:justify-center">
             <Link
               href="/signup"
-              className="inline-flex items-center rounded bg-gradient-to-r from-[#00ff9d] to-[#00b8ff] px-6 py-3 font-semibold text-[#050505] transition-all hover:shadow-lg hover:shadow-[#00ff9d]/20"
+              className="inline-flex items-center rounded bg-gradient-to-r from-[#ff3e3e] to-[#ff0000] px-7 py-4 font-semibold text-white transition-all hover:shadow-lg hover:shadow-[#ff3e3e]/30 button-3d button-glow relative overflow-hidden"
             >
-              <i className="fas fa-user-plus mr-2"></i> Create Account
+              <i className="fas fa-user-plus mr-2"></i>
+              <span>Create Account</span>
+              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shine bg-[length:200%_100%]"></span>
             </Link>
             <Link
               href="/login"
-              className="inline-flex items-center rounded border border-[#00c6ed] bg-transparent px-6 py-3 font-semibold text-[#00c6ed] transition-all hover:bg-[#00c6ed]/10"
+              className="inline-flex items-center rounded border-2 border-[#ff3e3e] bg-transparent px-7 py-4 font-semibold text-[#ff3e3e] transition-all hover:bg-[#ff3e3e]/10 button-3d relative overflow-hidden"
             >
-              <i className="fas fa-sign-in-alt mr-2"></i> Login
+              <i className="fas fa-sign-in-alt mr-2"></i>
+              <span>Login</span>
+              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shine bg-[length:200%_100%]"></span>
             </Link>
           </div>
         )}
 
         <div className="grid gap-8 md:grid-cols-3">
-          <div className="rounded-lg border border-white/5 bg-[#0a0a0a] p-6 transition-all hover:border-[#00ff9d]/30 hover:shadow-lg hover:shadow-[#00ff9d]/5">
-            <i className="fas fa-code mb-4 text-4xl text-[#00ff9d]"></i>
+          <div className="rounded-lg border border-white/5 bg-[#0a0a0a] p-8 transition-all hover:border-[#ff3e3e]/30 hover:shadow-lg hover:shadow-[#ff3e3e]/20 card-hover float-animation">
+            <i className="fas fa-code mb-4 text-5xl text-[#ff3e3e] pulse-effect"></i>
             <h3 className="mb-2 text-xl font-bold text-white">Premium Scripts</h3>
             <p className="text-gray-400">Access high-quality scripts with our cyberpunk platform.</p>
+            <div className="mt-4 w-1/3 h-1 bg-gradient-to-r from-[#ff3e3e] to-transparent rounded"></div>
           </div>
 
-          <div className="rounded-lg border border-white/5 bg-[#0a0a0a] p-6 transition-all hover:border-[#00c6ed]/30 hover:shadow-lg hover:shadow-[#00c6ed]/5">
-            <i className="fas fa-shield-alt mb-4 text-4xl text-[#00c6ed]"></i>
+          <div
+            className="rounded-lg border border-white/5 bg-[#0a0a0a] p-8 transition-all hover:border-[#ff3e3e]/30 hover:shadow-lg hover:shadow-[#ff3e3e]/20 card-hover float-animation"
+            style={{ animationDelay: "0.2s" }}
+          >
+            <i className="fas fa-shield-alt mb-4 text-5xl text-[#ff3e3e] pulse-effect"></i>
             <h3 className="mb-2 text-xl font-bold text-white">Secure Execution</h3>
             <p className="text-gray-400">Run scripts safely with our trusted execution environment.</p>
+            <div className="mt-4 w-1/3 h-1 bg-gradient-to-r from-[#ff3e3e] to-transparent rounded"></div>
           </div>
 
-          <div className="rounded-lg border border-white/5 bg-[#0a0a0a] p-6 transition-all hover:border-[#00b8ff]/30 hover:shadow-lg hover:shadow-[#00b8ff]/5">
-            <i className="fas fa-users mb-4 text-4xl text-[#00b8ff]"></i>
+          <div
+            className="rounded-lg border border-white/5 bg-[#0a0a0a] p-8 transition-all hover:border-[#ff3e3e]/30 hover:shadow-lg hover:shadow-[#ff3e3e]/20 card-hover float-animation"
+            style={{ animationDelay: "0.4s" }}
+          >
+            <i className="fas fa-users mb-4 text-5xl text-[#ff3e3e] pulse-effect"></i>
             <h3 className="mb-2 text-xl font-bold text-white">Community</h3>
             <p className="text-gray-400">Join our growing community of developers and enthusiasts.</p>
+            <div className="mt-4 w-1/3 h-1 bg-gradient-to-r from-[#ff3e3e] to-transparent rounded"></div>
           </div>
         </div>
       </div>

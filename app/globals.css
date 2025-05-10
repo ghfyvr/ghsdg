@@ -41,6 +41,29 @@ body {
   }
 }
 
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css");
 
 @layer utilities {
@@ -241,4 +264,62 @@ body {
 .button-3d:active {
   transform: translateY(1px);
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Float animation for cards and elements */
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Fade in animation for content */
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Mobile menu animation */
+.mobile-menu-enter {
+  transform: translateX(100%);
+}
+
+.mobile-menu-enter-active {
+  transform: translateX(0);
+  transition: transform 300ms;
+}
+
+.mobile-menu-exit {
+  transform: translateX(0);
+}
+
+.mobile-menu-exit-active {
+  transform: translateX(100%);
+  transition: transform 300ms;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .card-hover:hover {
+    transform: translateY(-3px);
+  }
+
+  .interactive-element:hover {
+    transform: scale(1.03);
+  }
+}
+
+/* Add this new class for the footer animation */
+.animate-shine {
+  animation: shine 3s infinite linear;
 }

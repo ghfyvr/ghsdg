@@ -40,6 +40,17 @@ export default function KeyGeneratorPage() {
   const [userIsAdmin, setUserIsAdmin] = useState(false)
   const [adminCheckComplete, setAdminCheckComplete] = useState(false)
   const [filter, setFilter] = useState<"all" | "premium" | "free">("all")
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Check for mobile devices
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener("resize", checkMobile)
+    return () => window.removeEventListener("resize", checkMobile)
+  }, [])
 
   // List of admin usernames
   const adminUsernames = ["admin", "owner", "nexus", "volt", "Nexus", "Voltrex", "Furky", "Ocean"]
@@ -128,7 +139,7 @@ export default function KeyGeneratorPage() {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="input-focus-effect w-full rounded-lg border border-white/10 bg-[#050505] py-2 pl-10 pr-4 text-white placeholder-gray-400 focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e]"
+                className="input-focus-effect w-full rounded-lg border border-white/10 bg-[#050505] py-2 pl-10 pr-4 text-white placeholder-gray-400 hover:border-[#ff3e3e]/50 hover:shadow-md focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e]"
                 placeholder="Search keys by title, description, or game..."
               />
             </div>

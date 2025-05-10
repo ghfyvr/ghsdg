@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useAuth } from "@/hooks/use-auth"
 import Link from "next/link"
@@ -15,6 +15,17 @@ export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { login } = useAuth()
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Check for mobile devices
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener("resize", checkMobile)
+    return () => window.removeEventListener("resize", checkMobile)
+  }, [])
 
   // Check for error from query params
   const errorParam = searchParams.get("error")
@@ -48,8 +59,10 @@ export default function LoginPage() {
 
   return (
     <div className="container mx-auto px-5 py-12">
-      <div className="mx-auto max-w-md rounded-lg border-l-4 border-[#ff3e3e] bg-[#1a1a1a] p-8 shadow-lg">
-        <h1 className="mb-6 text-2xl font-bold text-white">Login to NEXUS</h1>
+      <div className="mx-auto max-w-md rounded-lg border-l-4 border-[#ff3e3e] bg-[#1a1a1a] p-8 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-[#ff3e3e]/10">
+        <h1 className="mb-6 text-2xl font-bold text-white transition-all duration-300 hover:text-[#ff3e3e]">
+          Login to NEXUS
+        </h1>
 
         {(error || errorParam) && (
           <div className="mb-4 rounded bg-red-900/30 p-3 text-sm text-red-200">
@@ -67,7 +80,7 @@ export default function LoginPage() {
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="input-focus-effect w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e]"
+              className="input-focus-effect w-full rounded border border-white/10 bg-[#050505] px-4 py-4 text-white transition-all duration-300 hover:border-[#ff3e3e]/50 hover:shadow-md hover:shadow-[#ff3e3e]/10 focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e]"
             />
           </div>
 
@@ -80,14 +93,14 @@ export default function LoginPage() {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="input-focus-effect w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e]"
+              className="input-focus-effect w-full rounded border border-white/10 bg-[#050505] px-4 py-4 text-white transition-all duration-300 hover:border-[#ff3e3e]/50 hover:shadow-md hover:shadow-[#ff3e3e]/10 focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e]"
             />
           </div>
 
           <button
             type="submit"
             disabled={isLoading}
-            className="interactive-element button-glow button-3d w-full rounded bg-gradient-to-r from-[#ff3e3e] to-[#ff0000] px-4 py-3 font-semibold text-white transition-all hover:shadow-lg hover:shadow-[#ff3e3e]/20 disabled:opacity-50"
+            className="interactive-element button-glow button-3d w-full rounded bg-gradient-to-r from-[#ff3e3e] to-[#ff0000] px-4 py-4 font-semibold text-white transition-all hover:shadow-lg hover:shadow-[#ff3e3e]/20 disabled:opacity-50"
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">
@@ -110,7 +123,7 @@ export default function LoginPage() {
         <div className="mt-4 text-center">
           <Link
             href="/api/discord/login"
-            className="interactive-element button-glow inline-flex items-center rounded bg-[#5865F2] px-4 py-2 font-semibold text-white transition-all hover:bg-[#4752C4]"
+            className="interactive-element button-glow inline-flex items-center rounded bg-[#5865F2] px-4 py-3 font-semibold text-white transition-all hover:bg-[#4752C4]"
           >
             <i className="fab fa-discord mr-2"></i> Login with Discord
           </Link>

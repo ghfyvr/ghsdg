@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 
@@ -13,10 +13,21 @@ export default function SignupPage() {
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const [isMobile, setIsMobile] = useState(false)
   const [message, setMessage] = useState<{ type: "success" | "error" | null; text: string | null }>({
     type: null,
     text: null,
   })
+
+  // Check for mobile devices
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener("resize", checkMobile)
+    return () => window.removeEventListener("resize", checkMobile)
+  }, [])
 
   const validateUsername = (username: string): string | null => {
     if (username.length < 3 || username.length > 20) {
@@ -176,8 +187,10 @@ export default function SignupPage() {
 
   return (
     <div className="container mx-auto px-5 py-12">
-      <div className="mx-auto max-w-md rounded-lg border-l-4 border-[#ff3e3e] bg-[#1a1a1a] p-8 shadow-lg">
-        <h1 className="mb-6 text-2xl font-bold text-white">Create an Account</h1>
+      <div className="mx-auto max-w-md rounded-lg border-l-4 border-[#ff3e3e] bg-[#1a1a1a] p-8 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-[#ff3e3e]/10">
+        <h1 className="mb-6 text-2xl font-bold text-white transition-all duration-300 hover:text-[#ff3e3e]">
+          Create an Account
+        </h1>
 
         {error && <div className="mb-4 rounded bg-red-900/30 p-3 text-sm text-red-200">{error}</div>}
         {message.type === "success" && (
@@ -194,7 +207,7 @@ export default function SignupPage() {
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="input-focus-effect w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e]"
+              className="input-focus-effect w-full rounded border border-white/10 bg-[#050505] px-4 py-4 text-white transition-all duration-300 hover:border-[#ff3e3e]/50 hover:shadow-md hover:shadow-[#ff3e3e]/10 focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e]"
             />
             <p className="mt-1 text-xs text-gray-400">Username must be between 3-20 characters</p>
           </div>
@@ -208,7 +221,7 @@ export default function SignupPage() {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="input-focus-effect w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e]"
+              className="input-focus-effect w-full rounded border border-white/10 bg-[#050505] px-4 py-4 text-white transition-all duration-300 hover:border-[#ff3e3e]/50 hover:shadow-md hover:shadow-[#ff3e3e]/10 focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e]"
             />
             <p className="mt-1 text-xs text-gray-400">
               Password must be at least 8 characters and cannot contain your username
@@ -224,14 +237,14 @@ export default function SignupPage() {
               id="confirmPassword"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="input-focus-effect w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e]"
+              className="input-focus-effect w-full rounded border border-white/10 bg-[#050505] px-4 py-4 text-white transition-all duration-300 hover:border-[#ff3e3e]/50 hover:shadow-md hover:shadow-[#ff3e3e]/10 focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e]"
             />
           </div>
 
           <button
             type="submit"
             disabled={isLoading}
-            className="interactive-element button-glow button-3d w-full rounded bg-gradient-to-r from-[#ff3e3e] to-[#ff0000] px-4 py-3 font-semibold text-white transition-all hover:shadow-lg hover:shadow-[#ff3e3e]/20 disabled:opacity-50"
+            className="interactive-element button-glow button-3d w-full rounded bg-gradient-to-r from-[#ff3e3e] to-[#ff0000] px-4 py-4 font-semibold text-white transition-all hover:shadow-lg hover:shadow-[#ff3e3e]/20 disabled:opacity-50"
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">

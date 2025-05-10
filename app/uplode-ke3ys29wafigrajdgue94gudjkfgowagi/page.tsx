@@ -5,12 +5,11 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/use-auth"
-import Link from "next/link"
 
 // Add these imports at the top
 import { fetchGameDetailsById, fetchGameDetailsByName } from "@/app/actions/fetch-game-details"
 
-// Define the admin token constant - same as in key-generator
+// Define the admin token constant
 const ADMIN_TOKEN_KEY =
   "nexus_admin_token_Do_Not_Share_Leave_Console_Do_Not_Copy----_____-----3258ujaefhih328v6ha fhhag nFB@&F WDHB G#T*&HAF< #GQY* AKJFEB@*F ASLQ#*R(sdfb3ut93"
 
@@ -22,8 +21,6 @@ export default function UploadKeysPage() {
   const [keyCode, setKeyCode] = useState("")
   const [imageUrl, setImageUrl] = useState("")
   const [message, setMessage] = useState({ type: "", text: "" })
-  const [userIsAdmin, setUserIsAdmin] = useState(false)
-  const [adminCheckComplete, setAdminCheckComplete] = useState(false)
   const [isPremium, setIsPremium] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -47,37 +44,6 @@ export default function UploadKeysPage() {
     window.addEventListener("resize", checkMobile)
     return () => window.removeEventListener("resize", checkMobile)
   }, [])
-
-  // List of admin usernames - same as in key-generator
-  const adminUsernames = ["admin", "owner", "nexus", "volt", "Nexus", "Voltrex", "Furky", "Ocean"]
-
-  useEffect(() => {
-    const checkAdminAccess = () => {
-      if (isLoading) return
-
-      // Check if user is admin by username only
-      if (user) {
-        const isUserAdmin = adminUsernames.includes(user.username)
-        setUserIsAdmin(isUserAdmin)
-        setAdminCheckComplete(true)
-        return
-      }
-
-      // If not logged in, check for admin token in localStorage - using the same token as key-generator
-      const adminToken = localStorage.getItem(ADMIN_TOKEN_KEY)
-      if (adminToken) {
-        setUserIsAdmin(true)
-        setAdminCheckComplete(true)
-        return
-      }
-
-      // Not an admin, set state accordingly
-      setUserIsAdmin(false)
-      setAdminCheckComplete(true)
-    }
-
-    checkAdminAccess()
-  }, [user, isLoading])
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -249,54 +215,12 @@ export default function UploadKeysPage() {
     }
   }
 
-  if (isLoading || !adminCheckComplete) {
+  if (isLoading) {
     return (
       <div className="container mx-auto px-5 py-16">
         <div className="mx-auto max-w-2xl">
           <div className="flex items-center justify-center py-12">
             <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-[#ff3e3e]"></div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (!userIsAdmin) {
-    return (
-      <div className="container mx-auto px-5 py-16">
-        <div className="mx-auto max-w-2xl">
-          <h1 className="mb-8 text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#ff3e3e] to-[#ff0000]">
-            Upload Key
-          </h1>
-
-          <div className="rounded-lg border-l-4 border-[#ff3e3e] bg-[#1a1a1a] p-8 text-center">
-            <div className="mb-4 text-5xl text-[#ff3e3e]">
-              <i className="fas fa-lock"></i>
-            </div>
-            <h2 className="mb-2 text-xl font-bold text-white">Admin Access Required</h2>
-            <p className="mb-6 text-gray-400">Only administrators can upload keys to the NEXUS platform.</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/key-generator"
-                className="interactive-element button-glow button-3d inline-flex items-center rounded bg-gradient-to-r from-[#ff3e3e] to-[#ff0000] px-6 py-3 font-semibold text-white transition-all hover:shadow-lg hover:shadow-[#ff3e3e]/20"
-                onClick={(e) => {
-                  e.preventDefault()
-                  window.location.href = "/key-generator"
-                }}
-              >
-                <i className="fas fa-arrow-left mr-2"></i> Back to Keys
-              </Link>
-              <button
-                onClick={() => {
-                  // Set admin token and reload page - using the same token as key-generator
-                  localStorage.setItem(ADMIN_TOKEN_KEY, "true")
-                  window.location.reload()
-                }}
-                className="interactive-element button-shine inline-flex items-center rounded bg-[#1a1a1a] border border-[#ff3e3e] px-6 py-3 font-semibold text-[#ff3e3e] transition-all hover:bg-[#ff3e3e]/10"
-              >
-                <i className="fas fa-user-shield mr-2"></i> Admin Login
-              </button>
-            </div>
           </div>
         </div>
       </div>
