@@ -1,7 +1,6 @@
 "use client"
 
 import { useRef } from "react"
-
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useAuth } from "@/hooks/use-auth"
@@ -42,6 +41,7 @@ export default function ScriptsPage() {
   const [showCategories, setShowCategories] = useState(false)
   const [userIsAdmin, setUserIsAdmin] = useState(false)
   const categoriesRef = useRef<HTMLDivElement>(null)
+  const [imageLoadError, setImageLoadError] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     // Load scripts from localStorage
@@ -100,7 +100,7 @@ export default function ScriptsPage() {
         script.title.toLowerCase().includes(searchLower) ||
         script.description.toLowerCase().includes(searchLower) ||
         script.author.toLowerCase().includes(searchLower) ||
-        script.game.name.toLowerCase().includes(searchLower)
+        (script.game && script.game.name && script.game.name.toLowerCase().includes(searchLower))
       )
     }
 
@@ -172,11 +172,24 @@ export default function ScriptsPage() {
 
   const organizedScripts = organizeScriptsIntoRows(sortedScripts)
 
+  // Handle image error
+  const handleImageError = (scriptId: string) => {
+    setImageLoadError((prev) => ({
+      ...prev,
+      [scriptId]: true,
+    }))
+  }
+
+  // Get placeholder image
+  const getPlaceholderImage = () => {
+    return "/placeholder.svg?height=160&width=320"
+  }
+
   if (isLoading) {
     return (
       <div className="container mx-auto px-5 py-16">
         <div className="flex items-center justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-[#00ff9d]"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-red-500"></div>
         </div>
       </div>
     )
@@ -185,14 +198,14 @@ export default function ScriptsPage() {
   return (
     <div className="container mx-auto px-5 py-16">
       <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
-        <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#00ff9d] to-[#00b8ff]">
+        <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-700">
           Available Scripts
         </h1>
 
         {user && (
           <Link
             href="/upload-scripts"
-            className="inline-flex items-center rounded bg-gradient-to-r from-[#00ff9d] to-[#00b8ff] px-4 py-2 font-semibold text-[#050505] transition-all hover:shadow-lg hover:shadow-[#00ff9d]/20"
+            className="inline-flex items-center rounded bg-gradient-to-r from-red-500 to-red-700 px-4 py-2 font-semibold text-white transition-all hover:shadow-lg hover:shadow-red-500/20 hover:scale-105 transform duration-300"
           >
             <i className="fas fa-upload mr-2"></i> Upload Script
           </Link>
@@ -201,7 +214,7 @@ export default function ScriptsPage() {
 
       <div className="mb-8 grid gap-4 md:grid-cols-2">
         <div>
-          <label htmlFor="search" className="mb-2 block text-sm font-medium text-[#00c6ed]">
+          <label htmlFor="search" className="mb-2 block text-sm font-medium text-red-400">
             Search Scripts
           </label>
           <div className="relative">
@@ -210,7 +223,7 @@ export default function ScriptsPage() {
               id="search"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full rounded border border-white/10 bg-[#050505] pl-10 pr-4 py-3 text-white transition-all focus:border-[#00c6ed] focus:outline-none focus:ring-1 focus:ring-[#00c6ed]"
+              className="w-full rounded border border-white/10 bg-[#050505] pl-10 pr-4 py-3 text-white transition-all focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 hover:border-red-400"
               placeholder="Search by title, description, author, or game..."
             />
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -228,11 +241,11 @@ export default function ScriptsPage() {
         </div>
 
         <div ref={categoriesRef}>
-          <label className="mb-2 block text-sm font-medium text-[#00c6ed]">Filter by Category</label>
+          <label className="mb-2 block text-sm font-medium text-red-400">Filter by Category</label>
           <div className="relative">
             <button
               onClick={() => setShowCategories(!showCategories)}
-              className="w-full flex justify-between items-center rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#00c6ed] focus:outline-none focus:ring-1 focus:ring-[#00c6ed]"
+              className="w-full flex justify-between items-center rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 hover:border-red-400"
             >
               <span>
                 {selectedCategory ? scriptCategories.find((c) => c.id === selectedCategory)?.name : "All Categories"}
@@ -247,7 +260,7 @@ export default function ScriptsPage() {
                     setSelectedCategory(null)
                     setShowCategories(false)
                   }}
-                  className={`w-full px-4 py-2 text-left hover:bg-[#1a1a1a] ${!selectedCategory ? "text-[#00c6ed]" : "text-white"}`}
+                  className={`w-full px-4 py-2 text-left hover:bg-[#1a1a1a] ${!selectedCategory ? "text-red-500" : "text-white"}`}
                 >
                   All Categories
                 </button>
@@ -258,7 +271,7 @@ export default function ScriptsPage() {
                       setSelectedCategory(category.id)
                       setShowCategories(false)
                     }}
-                    className={`w-full px-4 py-2 text-left hover:bg-[#1a1a1a] ${selectedCategory === category.id ? "text-[#00c6ed]" : "text-white"}`}
+                    className={`w-full px-4 py-2 text-left hover:bg-[#1a1a1a] ${selectedCategory === category.id ? "text-red-500" : "text-white"}`}
                   >
                     {category.name}
                   </button>
@@ -271,7 +284,7 @@ export default function ScriptsPage() {
 
       {organizedScripts.length === 0 ? (
         <div className="rounded-lg border border-white/10 bg-[#1a1a1a] p-8 text-center">
-          <div className="mb-4 text-5xl text-[#00ff9d]">
+          <div className="mb-4 text-5xl text-red-500">
             <i className="fas fa-code"></i>
           </div>
           <h2 className="mb-2 text-xl font-bold text-white">No Scripts Available</h2>
@@ -288,21 +301,21 @@ export default function ScriptsPage() {
                 setSearchTerm("")
                 setSelectedCategory(null)
               }}
-              className="inline-flex items-center rounded bg-[#00c6ed] px-6 py-3 font-semibold text-[#050505] transition-all hover:shadow-lg hover:shadow-[#00c6ed]/20"
+              className="inline-flex items-center rounded bg-red-500 px-6 py-3 font-semibold text-white transition-all hover:shadow-lg hover:shadow-red-500/20 hover:scale-105 transform duration-300"
             >
               <i className="fas fa-times mr-2"></i> Clear Filters
             </button>
           ) : user ? (
             <Link
               href="/upload-scripts"
-              className="inline-flex items-center rounded bg-gradient-to-r from-[#00ff9d] to-[#00b8ff] px-6 py-3 font-semibold text-[#050505] transition-all hover:shadow-lg hover:shadow-[#00ff9d]/20"
+              className="inline-flex items-center rounded bg-gradient-to-r from-red-500 to-red-700 px-6 py-3 font-semibold text-white transition-all hover:shadow-lg hover:shadow-red-500/20 hover:scale-105 transform duration-300"
             >
               <i className="fas fa-upload mr-2"></i> Upload Script
             </Link>
           ) : (
             <Link
               href="/signup"
-              className="inline-flex items-center rounded bg-gradient-to-r from-[#00ff9d] to-[#00b8ff] px-6 py-3 font-semibold text-[#050505] transition-all hover:shadow-lg hover:shadow-[#00ff9d]/20"
+              className="inline-flex items-center rounded bg-gradient-to-r from-red-500 to-red-700 px-6 py-3 font-semibold text-white transition-all hover:shadow-lg hover:shadow-red-500/20 hover:scale-105 transform duration-300"
             >
               <i className="fas fa-user-plus mr-2"></i> Sign Up
             </Link>
@@ -313,36 +326,44 @@ export default function ScriptsPage() {
           {organizedScripts.map((script) => (
             <div
               key={script.id}
-              className={`rounded-lg border overflow-hidden transition-all hover:shadow-lg ${
+              className={`rounded-lg border overflow-hidden transition-all hover:shadow-lg hover:scale-105 transform duration-300 ${
                 script.isNexusTeam
-                  ? "border-[#00ff9d] bg-[#1a1a1a]/90 hover:shadow-[#00ff9d]/5"
+                  ? "border-red-500 bg-[#1a1a1a]/90 hover:shadow-red-500/20"
                   : script.isPremium
-                    ? "border-[#BA55D3] bg-[#1a1a1a]/90 hover:shadow-[#BA55D3]/5"
-                    : "border-white/10 bg-[#1a1a1a] hover:shadow-[#00c6ed]/5"
+                    ? "border-red-300 bg-[#1a1a1a]/90 hover:shadow-red-300/20"
+                    : "border-white/10 bg-[#1a1a1a] hover:shadow-red-400/10"
               }`}
             >
               {script.game && (
                 <div className="relative h-40 w-full">
-                  <Image
-                    src={script.game.imageUrl || "/placeholder.svg"}
-                    alt={script.game.name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    quality={100}
-                  />
+                  {!imageLoadError[script.id] ? (
+                    <Image
+                      src={script.game.imageUrl || getPlaceholderImage()}
+                      alt={script.game.name}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      quality={80}
+                      onError={() => handleImageError(script.id)}
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center bg-gray-900">
+                      <i className="fas fa-gamepad text-4xl text-red-500"></i>
+                    </div>
+                  )}
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#0a0a0a] to-transparent p-2">
                     <span className="text-xs font-medium text-gray-300">{script.game.name}</span>
                   </div>
                   {script.isNexusTeam && (
-                    <div className="absolute top-2 right-2 rounded bg-[#00ff9d] px-2 py-1 text-xs font-bold text-[#050505]">
+                    <div className="absolute top-2 right-2 rounded bg-red-500 px-2 py-1 text-xs font-bold text-white">
                       <span>
-                        <i style={{ color: "var(--secondary)" }} className="fas fa-user-shield"></i> Nexus Team
+                        <i className="fas fa-user-shield mr-1"></i> Nexus Team
                       </span>
                     </div>
                   )}
                   {script.isPremium && !script.isNexusTeam && (
-                    <div className="absolute top-2 right-2 rounded bg-[#BA55D3] px-2 py-1 text-xs font-bold text-white">
+                    <div className="absolute top-2 right-2 rounded bg-red-300 px-2 py-1 text-xs font-bold text-white">
                       PREMIUM
                     </div>
                   )}
@@ -367,7 +388,7 @@ export default function ScriptsPage() {
                         category && (
                           <span
                             key={categoryId}
-                            className="rounded bg-[#00c6ed]/10 px-2 py-0.5 text-xs font-medium text-[#00c6ed]"
+                            className="rounded bg-red-500/10 px-2 py-0.5 text-xs font-medium text-red-400"
                           >
                             {category.name}
                           </span>
@@ -377,7 +398,7 @@ export default function ScriptsPage() {
                   </div>
                 )}
                 <div className="mb-3 flex items-center gap-3">
-                  <div className="flex items-center gap-1 text-[#00c6ed] font-medium">
+                  <div className="flex items-center gap-1 text-red-400 font-medium">
                     <i className="fas fa-eye"></i>
                     <span>{script.views || 0}</span>
                   </div>
@@ -385,7 +406,7 @@ export default function ScriptsPage() {
                 <p className="mb-4 text-gray-300 line-clamp-3">{script.description}</p>
                 <Link
                   href={`/scripts/${script.id}`}
-                  className="inline-flex items-center text-sm font-medium text-[#00ff9d] hover:underline"
+                  className="inline-flex items-center text-sm font-medium text-red-500 hover:underline"
                 >
                   View Details <i className="fas fa-arrow-right ml-2"></i>
                 </Link>

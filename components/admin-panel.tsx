@@ -94,7 +94,11 @@ export function AdminPanel({ username }: { username: string }) {
         // Find accounts with matching HWID or IP
         const connectedAccts = []
 
-        if (hwidKey || ipValue) {
+        if (userData) {
+          const currentUserData = JSON.parse(userData)
+          const hwidKey = currentUserData.hwid
+          const ipValue = currentUserData.ip
+
           for (const key of allStoredKeys) {
             if (key.startsWith("nexus_user_") && key !== `nexus_user_${username}`) {
               const otherUser = JSON.parse(localStorage.getItem(key) || "{}")

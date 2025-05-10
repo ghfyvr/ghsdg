@@ -51,6 +51,7 @@ export default function ScriptDetailsPage() {
   const [error, setError] = useState("")
   const [isReportModalOpen, setIsReportModalOpen] = useState(false)
   const [authorIsAdmin, setAuthorIsAdmin] = useState(false)
+  const [imageError, setImageError] = useState(false)
 
   useEffect(() => {
     // Load scripts from localStorage
@@ -124,11 +125,21 @@ export default function ScriptDetailsPage() {
     localStorage.setItem("nexus_view_timestamps", JSON.stringify(viewTimestamps))
   }
 
+  // Get placeholder image
+  const getPlaceholderImage = () => {
+    return "/placeholder.svg?height=256&width=800"
+  }
+
+  // Handle image error
+  const handleImageError = () => {
+    setImageError(true)
+  }
+
   if (isLoading) {
     return (
       <div className="container mx-auto px-5 py-16">
         <div className="flex items-center justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-[#00ff9d]"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-red-500"></div>
         </div>
       </div>
     )
@@ -145,7 +156,7 @@ export default function ScriptDetailsPage() {
           <p className="mb-6 text-gray-400">The script you're looking for doesn't exist or has been removed.</p>
           <Link
             href="/scripts"
-            className="inline-flex items-center rounded bg-gradient-to-r from-[#00ff9d] to-[#00b8ff] px-6 py-3 font-semibold text-[#050505] transition-all hover:shadow-lg hover:shadow-[#00ff9d]/20"
+            className="inline-flex items-center rounded bg-gradient-to-r from-red-500 to-red-700 px-6 py-3 font-semibold text-white transition-all hover:shadow-lg hover:shadow-red-500/20 hover:scale-105 transform duration-300"
           >
             <i className="fas fa-arrow-left mr-2"></i> Back to Scripts
           </Link>
@@ -156,38 +167,49 @@ export default function ScriptDetailsPage() {
 
   return (
     <div className="container mx-auto px-5 py-16">
-      <Link href="/scripts" className="mb-8 inline-flex items-center text-[#00c6ed] hover:underline">
+      <Link href="/scripts" className="mb-8 inline-flex items-center text-red-400 hover:underline">
         <i className="fas fa-arrow-left mr-2"></i> Back to Scripts
       </Link>
 
       {script.game && (
-        <div className="mb-8 overflow-hidden rounded-lg border border-[#00c6ed]/30">
+        <div className="mb-8 overflow-hidden rounded-lg border border-red-500/30">
           <div className="relative h-48 w-full md:h-64">
-            <Image
-              src={script.game.imageUrl || "/placeholder.svg"}
-              alt={script.game.name}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              quality={100}
-              priority
-            />
+            {!imageError ? (
+              <Image
+                src={script.game.imageUrl || getPlaceholderImage()}
+                alt={script.game.name}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                quality={80}
+                priority
+                onError={handleImageError}
+                unoptimized
+              />
+            ) : (
+              <div className="h-full w-full flex items-center justify-center bg-gray-900">
+                <div className="text-center">
+                  <i className="fas fa-gamepad text-5xl text-red-500 mb-2"></i>
+                  <p className="text-white">{script.game.name}</p>
+                </div>
+              </div>
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent"></div>
             <div className="absolute bottom-0 left-0 right-0 p-6">
-              <span className="mb-2 inline-block rounded bg-[#00c6ed]/20 px-3 py-1 text-sm font-medium text-[#00c6ed]">
+              <span className="mb-2 inline-block rounded bg-red-500/20 px-3 py-1 text-sm font-medium text-red-400">
                 {script.game.name}
               </span>
               <h1 className="text-3xl font-bold text-white">{script.title}</h1>
             </div>
             {script.isNexusTeam && (
-              <div className="absolute top-4 right-4 rounded bg-[#00ff9d] px-3 py-1 text-sm font-bold text-[#050505]">
+              <div className="absolute top-4 right-4 rounded bg-red-500 px-3 py-1 text-sm font-bold text-white">
                 <span>
-                  <i style={{ color: "var(--secondary)" }} className="fas fa-user-shield"></i> Nexus Team
+                  <i className="fas fa-user-shield mr-1"></i> Nexus Team
                 </span>
               </div>
             )}
             {script.isPremium && !script.isNexusTeam && (
-              <div className="absolute top-4 right-4 rounded bg-[#BA55D3] px-3 py-1 text-sm font-bold text-white">
+              <div className="absolute top-4 right-4 rounded bg-red-300 px-3 py-1 text-sm font-bold text-white">
                 PREMIUM
               </div>
             )}
@@ -198,7 +220,7 @@ export default function ScriptDetailsPage() {
       <div className="mb-8 flex flex-col gap-6 md:flex-row">
         <div className="w-full md:w-2/3">
           {!script.game && (
-            <h1 className="mb-2 text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#00ff9d] to-[#00b8ff]">
+            <h1 className="mb-2 text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-700">
               {script.title}
             </h1>
           )}
@@ -208,8 +230,8 @@ export default function ScriptDetailsPage() {
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-sm font-bold text-[#0a0a0a]">
                 {script.author.charAt(0).toUpperCase()}
               </div>
-              <span className={`text-gray-300 ${authorIsAdmin ? "text-[#00ff9d]" : ""}`}>
-                {script.author} {authorIsAdmin && <i className="fas fa-shield-alt ml-1 text-xs text-[#00a2ff]"></i>}
+              <span className={`text-gray-300 ${authorIsAdmin ? "text-red-500" : ""}`}>
+                {script.author} {authorIsAdmin && <i className="fas fa-shield-alt ml-1 text-xs text-red-400"></i>}
               </span>
             </Link>
             <span className="text-gray-500">•</span>
@@ -224,10 +246,7 @@ export default function ScriptDetailsPage() {
                 const category = scriptCategories.find((c) => c.id === categoryId)
                 return (
                   category && (
-                    <span
-                      key={categoryId}
-                      className="rounded bg-[#00c6ed]/10 px-3 py-1 text-sm font-medium text-[#00c6ed]"
-                    >
+                    <span key={categoryId} className="rounded bg-red-500/10 px-3 py-1 text-sm font-medium text-red-400">
                       {category.name}
                     </span>
                   )
@@ -236,19 +255,19 @@ export default function ScriptDetailsPage() {
             </div>
           )}
 
-          <div className="rounded-lg border-l-4 border-[#00c6ed] bg-[#1a1a1a] p-6">
+          <div className="rounded-lg border-l-4 border-red-500 bg-[#1a1a1a] p-6">
             <h2 className="mb-3 text-xl font-bold text-white">Description</h2>
             <p className="text-gray-300 whitespace-pre-line">{script.description}</p>
           </div>
 
-          <div className="mt-4 rounded-lg border-l-4 border-[#00ff9d] bg-[#1a1a1a] p-6">
+          <div className="mt-4 rounded-lg border-l-4 border-red-500 bg-[#1a1a1a] p-6">
             <h2 className="mb-3 text-xl font-bold text-white">Script Code</h2>
             <div className="relative">
               <div className="font-mono text-sm text-gray-300 whitespace-pre-wrap overflow-auto max-h-[300px]">
                 {escapeHtml(script.code)}
               </div>
               <button
-                className="absolute right-0 top-0 rounded bg-[#1a1a1a] p-2 text-[#00ff9d] transition-all hover:bg-[#2a2a2a]"
+                className="absolute right-0 top-0 rounded bg-[#1a1a1a] p-2 text-red-500 transition-all hover:bg-[#2a2a2a]"
                 onClick={() => {
                   navigator.clipboard.writeText(script.code)
                   alert("Script copied to clipboard!")
@@ -265,7 +284,7 @@ export default function ScriptDetailsPage() {
             <h2 className="mb-4 text-xl font-bold text-white">Actions</h2>
 
             <button
-              className="mb-3 w-full rounded border border-[#00ff9d] bg-[rgba(0,255,157,0.1)] px-4 py-3 text-[#00ff9d] transition-all hover:bg-[rgba(0,255,157,0.2)]"
+              className="mb-3 w-full rounded border border-red-500 bg-[rgba(239,68,68,0.1)] px-4 py-3 text-red-500 transition-all hover:bg-[rgba(239,68,68,0.2)] hover:scale-105 transform duration-300"
               onClick={() => {
                 navigator.clipboard.writeText(script.code)
                 alert("Script copied to clipboard!")
@@ -275,7 +294,7 @@ export default function ScriptDetailsPage() {
             </button>
 
             <button
-              className="mb-3 w-full rounded border border-[#00c6ed] bg-[rgba(0,198,237,0.1)] px-4 py-3 text-[#00c6ed] transition-all hover:bg-[rgba(0,198,237,0.2)]"
+              className="mb-3 w-full rounded border border-red-400 bg-[rgba(248,113,113,0.1)] px-4 py-3 text-red-400 transition-all hover:bg-[rgba(248,113,113,0.2)] hover:scale-105 transform duration-300"
               onClick={() => {
                 const blob = new Blob([script.code], { type: "text/plain" })
                 const url = URL.createObjectURL(blob)
@@ -292,7 +311,7 @@ export default function ScriptDetailsPage() {
             </button>
 
             <button
-              className="w-full rounded border border-red-500 bg-[rgba(239,68,68,0.1)] px-4 py-3 text-red-500 transition-all hover:bg-[rgba(239,68,68,0.2)]"
+              className="w-full rounded border border-red-300 bg-[rgba(252,165,165,0.1)] px-4 py-3 text-red-300 transition-all hover:bg-[rgba(252,165,165,0.2)] hover:scale-105 transform duration-300"
               onClick={() => setIsReportModalOpen(true)}
             >
               <i className="fas fa-flag mr-2"></i> Report Script
@@ -303,7 +322,7 @@ export default function ScriptDetailsPage() {
             <h2 className="mb-4 text-xl font-bold text-white">Statistics</h2>
 
             <div className="flex items-center justify-center">
-              <div className="flex items-center gap-2 text-xl text-[#00c6ed] font-semibold">
+              <div className="flex items-center gap-2 text-xl text-red-400 font-semibold">
                 <i className="fas fa-eye"></i>
                 <span>Views: {script.views}</span>
               </div>
@@ -315,14 +334,22 @@ export default function ScriptDetailsPage() {
               <h2 className="mb-4 text-xl font-bold text-white">Game Information</h2>
               <div className="flex items-center gap-3">
                 <div className="h-12 w-12 overflow-hidden rounded">
-                  <Image
-                    src={script.game.imageUrl || "/placeholder.svg"}
-                    alt={script.game.name}
-                    width={48}
-                    height={48}
-                    className="h-full w-full object-cover"
-                    quality={100}
-                  />
+                  {!imageError ? (
+                    <Image
+                      src={script.game.imageUrl || "/placeholder.svg?height=48&width=48"}
+                      alt={script.game.name}
+                      width={48}
+                      height={48}
+                      className="h-full w-full object-cover"
+                      quality={80}
+                      onError={handleImageError}
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center bg-gray-900">
+                      <i className="fas fa-gamepad text-red-500"></i>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <h3 className="font-medium text-white">{script.game.name}</h3>
