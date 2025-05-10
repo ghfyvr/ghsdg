@@ -53,6 +53,14 @@ export default function ScriptDetailsPage() {
   const [authorIsAdmin, setAuthorIsAdmin] = useState(false)
   const [imageError, setImageError] = useState(false)
 
+  // Add a function to format view counts
+  const formatViewCount = (count: number) => {
+    if (count >= 1000) {
+      return (count / 1000).toFixed(1) + "k"
+    }
+    return count
+  }
+
   useEffect(() => {
     // Load scripts from localStorage
     const storedScripts = JSON.parse(localStorage.getItem("nexus_scripts") || "[]")
@@ -324,7 +332,7 @@ export default function ScriptDetailsPage() {
             <div className="flex items-center justify-center">
               <div className="flex items-center gap-2 text-xl text-red-400 font-semibold">
                 <i className="fas fa-eye"></i>
-                <span>Views: {script.views}</span>
+                <span>{script.views >= 1000 ? (script.views / 1000).toFixed(1) + "k" : script.views} Views</span>
               </div>
             </div>
           </div>

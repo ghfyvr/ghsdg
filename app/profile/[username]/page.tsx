@@ -241,12 +241,12 @@ export default function ProfilePage() {
     <div className="container mx-auto px-5 py-16">
       <div className="mx-auto max-w-4xl">
         {/* Profile Header */}
-        <div className="mb-8 rounded-lg border-l-4 border-gray-200 bg-white p-8 shadow-lg transition-all duration-300 hover:shadow-xl">
+        <div className="mb-8 rounded-lg border-l-4 border-[#ff3e3e] bg-[#1a1a1a] p-8 shadow-lg transition-all duration-300 hover:shadow-xl">
           <div className="flex flex-col items-center gap-6 md:flex-row">
             {/* Update the profile header section to include profile picture upload */}
             <div className="relative">
               {profilePicture ? (
-                <div className="h-24 w-24 overflow-hidden rounded-full border-2 border-gray-200 transition-all duration-300 hover:border-[#ff3e3e] hover:shadow-lg">
+                <div className="h-24 w-24 overflow-hidden rounded-full border-2 border-[#ff3e3e]/30 transition-all duration-300 hover:border-[#ff3e3e] hover:shadow-lg">
                   <img
                     src={profilePicture || "/placeholder.svg"}
                     alt={profileUser.username}
@@ -254,7 +254,7 @@ export default function ProfilePage() {
                   />
                 </div>
               ) : (
-                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gray-100 text-4xl font-bold text-gray-700 border-2 border-gray-200 transition-all duration-300 hover:border-[#ff3e3e] hover:shadow-lg">
+                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[#0a0a0a] text-4xl font-bold text-[#ff3e3e] border-2 border-[#ff3e3e]/30 transition-all duration-300 hover:border-[#ff3e3e] hover:shadow-lg">
                   {profileUser.username.charAt(0).toUpperCase()}
                 </div>
               )}
@@ -278,25 +278,25 @@ export default function ProfilePage() {
 
             <div className="text-center md:text-left flex-1">
               <div className="flex items-center justify-center md:justify-start">
-                <h1 className="mb-2 text-3xl font-bold text-gray-800">{profileUser.username}</h1>
+                <h1 className="mb-2 text-3xl font-bold text-white">{profileUser.username}</h1>
                 {isUserAdmin && (
                   <span className="ml-2 rounded bg-[#ff3e3e]/20 px-2 py-0.5 text-xs text-[#ff3e3e]">
                     <i className="fas fa-shield-alt mr-1 text-[#ff0000]"></i> NEXUS TEAM
                   </span>
                 )}
               </div>
-              <p className="text-gray-600">Member since {new Date(profileUser.createdAt).toLocaleDateString()}</p>
+              <p className="text-gray-400">Member since {new Date(profileUser.createdAt).toLocaleDateString()}</p>
               {profileUser.email && (
                 <p className="mt-1 flex items-center justify-center md:justify-start">
-                  <span className={profileUser.emailVerified ? "text-green-600" : "text-yellow-600"}>
+                  <span className={profileUser.emailVerified ? "text-green-400" : "text-yellow-400"}>
                     {profileUser.email}
                   </span>
                   {profileUser.emailVerified ? (
-                    <span className="ml-2 rounded bg-green-500/20 px-2 py-0.5 text-xs text-green-600">
+                    <span className="ml-2 rounded bg-green-500/20 px-2 py-0.5 text-xs text-green-400">
                       <i className="fas fa-check-circle mr-1"></i> Verified
                     </span>
                   ) : (
-                    <span className="ml-2 rounded bg-yellow-500/20 px-2 py-0.5 text-xs text-yellow-600">
+                    <span className="ml-2 rounded bg-yellow-500/20 px-2 py-0.5 text-xs text-yellow-400">
                       <i className="fas fa-exclamation-circle mr-1"></i> Unverified
                     </span>
                   )}
@@ -309,12 +309,12 @@ export default function ProfilePage() {
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
                     placeholder="Write something about yourself..."
-                    className="w-full rounded border border-gray-300 bg-white px-4 py-2 text-gray-700 transition-all focus:border-[#ff3e3e] focus:outline-none hover:border-[#ff3e3e]/50 hover:shadow-md"
+                    className="w-full rounded border border-[#ff3e3e]/30 bg-[#0a0a0a] px-4 py-2 text-white transition-all focus:border-[#ff3e3e] focus:outline-none hover:border-[#ff3e3e]/50 hover:shadow-md"
                     rows={3}
                     maxLength={200}
                   />
                   <div className="mt-2 flex justify-between">
-                    <p className="text-xs text-gray-500">{bio.length}/200</p>
+                    <p className="text-xs text-gray-400">{bio.length}/200</p>
                     <div className="flex gap-2">
                       <button
                         onClick={saveProfile}
@@ -324,7 +324,7 @@ export default function ProfilePage() {
                       </button>
                       <button
                         onClick={() => setIsEditingProfile(false)}
-                        className="rounded bg-gray-200 px-3 py-1 text-xs font-medium text-gray-700 transition-all hover:bg-gray-300"
+                        className="rounded bg-[#2a2a2a] px-3 py-1 text-xs font-medium text-gray-300 transition-all hover:bg-[#3a3a3a]"
                       >
                         Cancel
                       </button>
@@ -334,7 +334,7 @@ export default function ProfilePage() {
               ) : (
                 <>
                   {profileUser.bio ? (
-                    <div className="mt-3 text-gray-700">
+                    <div className="mt-3 text-gray-300">
                       <p>{profileUser.bio}</p>
                       {isOwnProfile && (
                         <button
@@ -362,12 +362,12 @@ export default function ProfilePage() {
         {user && currentUserIsAdmin && user.username !== username && <AdminPanel username={username as string} />}
 
         {/* Tabs */}
-        <div className="mb-6 flex border-b border-gray-200">
+        <div className="mb-6 flex border-b border-[#2a2a2a]">
           <button
             className={`px-6 py-3 font-medium transition-all ${
               activeTab === "scripts"
                 ? "border-b-2 border-[#ff3e3e] text-[#ff3e3e]"
-                : "text-gray-500 hover:text-gray-700"
+                : "text-gray-400 hover:text-gray-200"
             }`}
             onClick={() => setActiveTab("scripts")}
           >
@@ -375,7 +375,7 @@ export default function ProfilePage() {
           </button>
           <button
             className={`px-6 py-3 font-medium transition-all ${
-              activeTab === "stats" ? "border-b-2 border-[#ff3e3e] text-[#ff3e3e]" : "text-gray-500 hover:text-gray-700"
+              activeTab === "stats" ? "border-b-2 border-[#ff3e3e] text-[#ff3e3e]" : "text-gray-400 hover:text-gray-200"
             }`}
             onClick={() => setActiveTab("stats")}
           >
@@ -387,12 +387,12 @@ export default function ProfilePage() {
         {activeTab === "scripts" ? (
           <>
             {userScripts.length === 0 ? (
-              <div className="rounded-lg border border-gray-200 bg-white p-8 text-center shadow-md transition-all hover:shadow-lg">
+              <div className="rounded-lg border border-[#2a2a2a] bg-[#1a1a1a] p-8 text-center shadow-md transition-all hover:shadow-lg">
                 <div className="mb-4 text-5xl text-[#ff3e3e]">
                   <i className="fas fa-code"></i>
                 </div>
-                <h2 className="mb-2 text-xl font-bold text-gray-800">No Scripts Uploaded</h2>
-                <p className="mb-6 text-gray-600">
+                <h2 className="mb-2 text-xl font-bold text-white">No Scripts Uploaded</h2>
+                <p className="mb-6 text-gray-400">
                   {isOwnProfile
                     ? "You haven't uploaded any scripts yet."
                     : `${profileUser.username} hasn't uploaded any scripts yet.`}
@@ -400,7 +400,7 @@ export default function ProfilePage() {
                 {isOwnProfile && (
                   <Link
                     href="/upload-scripts"
-                    className="nav-item inline-flex items-center rounded bg-gradient-to-r from-[#ff3e3e] to-[#ff0000] px-6 py-3 font-semibold text-white transition-all hover:shadow-lg hover:shadow-[#ff3e3e]/20"
+                    className="nav-item inline-flex items-center rounded bg-gradient-to-r from-[#ff3e3e] to-[#ff0000] px-6 py-3 font-semibold text-white transition-all hover:shadow-lg hover:shadow-[#ff3e3e]/20 hover:scale-105"
                   >
                     <i className="fas fa-upload mr-2"></i> Upload Your First Script
                   </Link>
@@ -411,7 +411,7 @@ export default function ProfilePage() {
                 {userScripts.map((script) => (
                   <div
                     key={script.id}
-                    className="card-hover rounded-lg border border-gray-200 bg-white overflow-hidden transition-all hover:border-[#ff3e3e]/30 hover:shadow-lg"
+                    className="card-hover rounded-lg border border-[#2a2a2a] bg-[#1a1a1a] overflow-hidden transition-all hover:border-[#ff3e3e]/30 hover:shadow-lg"
                   >
                     {script.game && (
                       <div className="relative h-40 w-full">
@@ -430,9 +430,9 @@ export default function ProfilePage() {
                     )}
                     <div className="p-6">
                       <div className="mb-2">
-                        <h2 className="text-xl font-bold text-gray-800">{script.title}</h2>
+                        <h2 className="text-xl font-bold text-white">{script.title}</h2>
                       </div>
-                      <p className="mb-3 text-sm text-gray-500">{new Date(script.createdAt).toLocaleDateString()}</p>
+                      <p className="mb-3 text-sm text-gray-400">{new Date(script.createdAt).toLocaleDateString()}</p>
                       {script.categories && script.categories.length > 0 && (
                         <div className="mb-3 flex flex-wrap gap-1">
                           {script.categories.map((categoryId) => {
@@ -453,10 +453,16 @@ export default function ProfilePage() {
                       <div className="mb-3 flex items-center gap-3">
                         <div className="flex items-center gap-1 text-[#ff3e3e] font-medium">
                           <i className="fas fa-eye"></i>
-                          <span>{script.views || 0}</span>
+                          <span>
+                            {script.views
+                              ? script.views >= 1000
+                                ? (script.views / 1000).toFixed(1) + "k"
+                                : script.views
+                              : 0}
+                          </span>
                         </div>
                       </div>
-                      <p className="mb-4 text-gray-700 line-clamp-3">{script.description}</p>
+                      <p className="mb-4 text-gray-300 line-clamp-3">{script.description}</p>
                       <Link
                         href={`/scripts/${script.id}`}
                         className="inline-flex items-center text-sm font-medium text-[#ff3e3e] hover:underline"
@@ -470,18 +476,20 @@ export default function ProfilePage() {
             )}
           </>
         ) : (
-          <div className="rounded-lg border border-gray-200 bg-white p-8 shadow-md transition-all hover:shadow-lg">
-            <h2 className="mb-6 text-xl font-bold text-gray-800">
+          <div className="rounded-lg border border-[#2a2a2a] bg-[#1a1a1a] p-8 shadow-md transition-all hover:shadow-lg">
+            <h2 className="mb-6 text-xl font-bold text-white">
               {isOwnProfile ? "Your Statistics" : `${profileUser.username}'s Statistics`}
             </h2>
             <div className="grid gap-6 md:grid-cols-2">
-              <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-center transition-all hover:shadow-md">
+              <div className="rounded-lg border border-[#2a2a2a] bg-[#0a0a0a] p-4 text-center transition-all hover:shadow-md">
                 <div className="mb-2 text-3xl text-[#ff3e3e]">{totalScripts}</div>
-                <div className="text-sm text-gray-600">Total Scripts</div>
+                <div className="text-sm text-gray-400">Total Scripts</div>
               </div>
-              <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-center transition-all hover:shadow-md">
-                <div className="mb-2 text-3xl text-[#ff3e3e]">{totalViews || 0}</div>
-                <div className="text-sm text-gray-600">Total Views</div>
+              <div className="rounded-lg border border-[#2a2a2a] bg-[#0a0a0a] p-4 text-center transition-all hover:shadow-md">
+                <div className="mb-2 text-3xl text-[#ff3e3e]">
+                  {totalViews >= 1000 ? (totalViews / 1000).toFixed(1) + "k" : totalViews || 0}
+                </div>
+                <div className="text-sm text-gray-400">Total Views</div>
               </div>
             </div>
           </div>

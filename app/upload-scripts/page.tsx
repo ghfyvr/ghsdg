@@ -283,7 +283,7 @@ export default function UploadScriptsPage() {
   return (
     <div className="container mx-auto px-5 py-16">
       <div className="mx-auto max-w-2xl">
-        <h1 className="mb-8 text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#00ff9d] to-[#00b8ff]">
+        <h1 className="mb-8 text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#ff3e3e] to-[#ff0000]">
           Upload Script
         </h1>
 
@@ -310,9 +310,9 @@ export default function UploadScriptsPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="rounded-lg border-l-4 border-[#00ff9d] bg-[#1a1a1a] p-8">
+        <form onSubmit={handleSubmit} className="rounded-lg border-l-4 border-[#ff3e3e] bg-[#1a1a1a] p-8">
           <div className="mb-6">
-            <label htmlFor="scriptTitle" className="mb-2 block font-medium text-[#00ff9d]">
+            <label htmlFor="scriptTitle" className="mb-2 block font-medium text-[#ff3e3e]">
               Script Title
             </label>
             <input
@@ -320,7 +320,7 @@ export default function UploadScriptsPage() {
               id="scriptTitle"
               value={scriptTitle}
               onChange={(e) => setScriptTitle(e.target.value)}
-              className="w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#00ff9d] focus:outline-none focus:ring-1 focus:ring-[#00ff9d]"
+              className="w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e] hover:border-[#ff3e3e]/50"
               placeholder="Enter a title for your script"
             />
           </div>
@@ -346,7 +346,7 @@ export default function UploadScriptsPage() {
           )}
 
           <div className="mb-6">
-            <label className="mb-2 block font-medium text-[#00ff9d]">Game Search</label>
+            <label className="mb-2 block font-medium text-[#ff3e3e]">Game Search</label>
 
             <div className="mb-4 flex gap-4">
               <button
@@ -500,7 +500,7 @@ export default function UploadScriptsPage() {
           )}
 
           <div className="mb-6">
-            <label className="mb-2 block font-medium text-[#00ff9d]">Categories</label>
+            <label className="mb-2 block font-medium text-[#ff3e3e]">Categories</label>
             <div className="relative" ref={categoriesRef}>
               <button
                 type="button"
@@ -525,14 +525,14 @@ export default function UploadScriptsPage() {
                     >
                       <div
                         className={`mr-2 flex h-4 w-4 items-center justify-center rounded border ${
-                          selectedCategories.includes(category.id) ? "border-[#00ff9d] bg-[#00ff9d]" : "border-white/30"
+                          selectedCategories.includes(category.id) ? "border-[#ff3e3e] bg-[#ff3e3e]" : "border-white/30"
                         }`}
                       >
                         {selectedCategories.includes(category.id) && (
                           <i className="fas fa-check text-xs text-[#050505]"></i>
                         )}
                       </div>
-                      <span className={selectedCategories.includes(category.id) ? "text-[#00ff9d]" : "text-white"}>
+                      <span className={selectedCategories.includes(category.id) ? "text-[#ff3e3e]" : "text-white"}>
                         {category.name}
                       </span>
                     </div>
@@ -544,14 +544,14 @@ export default function UploadScriptsPage() {
           </div>
 
           <div className="mb-6">
-            <label htmlFor="scriptDescription" className="mb-2 block font-medium text-[#00ff9d]">
+            <label htmlFor="scriptDescription" className="mb-2 block font-medium text-[#ff3e3e]">
               Description
             </label>
             <textarea
               id="scriptDescription"
               value={scriptDescription}
               onChange={(e) => setScriptDescription(e.target.value)}
-              className="w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#00ff9d] focus:outline-none focus:ring-1 focus:ring-[#00ff9d]"
+              className="w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e] hover:border-[#ff3e3e]/50"
               rows={3}
               placeholder="Describe what your script does"
               maxLength={500}
@@ -560,14 +560,14 @@ export default function UploadScriptsPage() {
           </div>
 
           <div className="mb-6">
-            <label htmlFor="scriptCode" className="mb-2 block font-medium text-[#00ff9d]">
+            <label htmlFor="scriptCode" className="mb-2 block font-medium text-[#ff3e3e]">
               Script Code
             </label>
             <textarea
               id="scriptCode"
               value={scriptCode}
               onChange={(e) => setScriptCode(e.target.value)}
-              className="font-mono w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#00ff9d] focus:outline-none focus:ring-1 focus:ring-[#00ff9d]"
+              className="font-mono w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e] hover:border-[#ff3e3e]/50"
               rows={10}
               placeholder="-- Paste your Lua script here"
             />
@@ -579,7 +579,7 @@ export default function UploadScriptsPage() {
           <div className="flex gap-4">
             <button
               type="submit"
-              className="flex-1 rounded bg-gradient-to-r from-[#00ff9d] to-[#00b8ff] px-4 py-3 font-semibold text-[#050505] transition-all hover:shadow-lg hover:shadow-[#00ff9d]/20"
+              className="flex-1 rounded bg-gradient-to-r from-[#ff3e3e] to-[#ff0000] px-4 py-3 font-semibold text-white transition-all hover:shadow-lg hover:shadow-[#ff3e3e]/20 hover:scale-105 transform duration-300"
             >
               <i className="fas fa-upload mr-2"></i> Upload Script
             </button>

@@ -24,6 +24,7 @@ type Key = {
     imageUrl: string
     gameId?: string
   }
+  views?: number
 }
 
 export default function KeyDetailsPage() {
@@ -70,49 +71,18 @@ export default function KeyDetailsPage() {
         }
         checkCurrentUserAdmin()
       }
+
+      // Increment view count
+      const updatedKey = { ...foundKey, views: (foundKey.views || 0) + 1 }
+      const updatedKeys = storedKeys.map((k: Key) => (k.id === id ? updatedKey : k))
+      localStorage.setItem("nexus_keys", JSON.stringify(updatedKeys))
+      setKey(updatedKey)
     } else {
       setError("Key not found")
     }
 
     setIsLoading(false)
   }, [id, user])
-
-  const handleLikeDislike = (action: "like" | "dislike") => {
-    if (!user || !key) return
-
-    // Check if user is banned
-    const userData = JSON.parse(localStorage.getItem(`nexus_user_${user.username}`) || "{}")
-    if (userData.isBanned) {
-      alert("Your account has been banned. You cannot like or dislike keys.")
-      return
-    }
-
-    // Create a copy of all keys
-    const allKeys = JSON.parse(localStorage.getItem("nexus_keys") || "[]")
-    const keyIndex = allKeys.findIndex((k: Key) => k.id === key.id)
-
-    if (keyIndex === -1) return
-
-    const updatedKey = { ...allKeys[keyIndex] }
-
-    // Remove user from both arrays first
-    updatedKey.likes = updatedKey.likes.filter((userId: string) => userId !== user.id)
-    updatedKey.dislikes = updatedKey.dislikes.filter((userId: string) => userId !== user.id)
-
-    // Add user to the appropriate array
-    if (action === "like") {
-      updatedKey.likes.push(user.id)
-    } else {
-      updatedKey.dislikes.push(user.id)
-    }
-
-    // Update localStorage
-    allKeys[keyIndex] = updatedKey
-    localStorage.setItem("nexus_keys", JSON.stringify(allKeys))
-
-    // Update state
-    setKey(updatedKey)
-  }
 
   const handleDeleteKey = async () => {
     if (!currentUserIsAdmin || !key) return
@@ -229,7 +199,7 @@ export default function KeyDetailsPage() {
             <h2 className="mb-4 text-xl font-bold text-white">Actions</h2>
 
             <button
-              className="mb-3 w-full rounded border border-[#00ff9d] bg-[rgba(0,255,157,0.1)] px-4 py-3 text-[#00ff9d] transition-all hover:bg-[rgba(0,255,157,0.2)]"
+              className="mb-3 w-full rounded border border-[#00ff9d] bg-[rgba(0,255,157,0.1)] px-4 py-3 text-[#00ff9d] transition-all hover:bg-[rgba(0,255,157,0.2)] hover:scale-105 transform duration-300"
               onClick={() => {
                 navigator.clipboard.writeText(key.keyCode)
                 alert("Key copied to clipboard!")
@@ -240,7 +210,7 @@ export default function KeyDetailsPage() {
 
             {currentUserIsAdmin && (
               <button
-                className="w-full rounded border border-red-500 bg-[rgba(239,68,68,0.1)] px-4 py-3 text-red-500 transition-all hover:bg-[rgba(239,68,68,0.2)]"
+                className="w-full rounded border border-red-500 bg-[rgba(239,68,68,0.1)] px-4 py-3 text-red-500 transition-all hover:bg-[rgba(239,68,68,0.2)] hover:scale-105 transform duration-300"
                 onClick={handleDeleteKey}
               >
                 <i className="fas fa-trash mr-2"></i> Delete Key
@@ -251,44 +221,14 @@ export default function KeyDetailsPage() {
           <div className="mt-4 rounded-lg border border-white/10 bg-[#1a1a1a] p-6">
             <h2 className="mb-4 text-xl font-bold text-white">Statistics</h2>
 
-            <div className="flex items-center justify-center gap-8">
-              <div className="flex items-center gap-1 text-lg">
-                <i className="fas fa-thumbs-up text-green-400"></i>
-                <span>{key.likes.length}</span>
-              </div>
-              <div className="flex items-center gap-1 text-lg">
-                <i className="fas fa-thumbs-down text-red-400"></i>
-                <span>{key.dislikes.length}</span>
+            <div className="flex items-center justify-center">
+              <div className="flex items-center gap-2 text-lg">
+                <i className="fas fa-eye text-[#00c6ed]"></i>
+                <span className="text-white">
+                  {key.views ? (key.views >= 1000 ? (key.views / 1000).toFixed(1) + "k" : key.views) : 0} Views
+                </span>
               </div>
             </div>
-
-            {user && (
-              <div className="mt-4 flex justify-center gap-4">
-                <button
-                  onClick={() => handleLikeDislike("like")}
-                  className={`flex items-center gap-1 rounded px-3 py-1 ${
-                    key.likes.includes(user.id)
-                      ? "bg-green-500/20 text-green-400"
-                      : "bg-[#050505] text-gray-400 hover:text-green-400"
-                  }`}
-                >
-                  <i className="fas fa-thumbs-up"></i>
-                  <span>Like</span>
-                </button>
-
-                <button
-                  onClick={() => handleLikeDislike("dislike")}
-                  className={`flex items-center gap-1 rounded px-3 py-1 ${
-                    key.dislikes.includes(user.id)
-                      ? "bg-red-500/20 text-red-400"
-                      : "bg-[#050505] text-gray-400 hover:text-red-400"
-                  }`}
-                >
-                  <i className="fas fa-thumbs-down"></i>
-                  <span>Dislike</span>
-                </button>
-              </div>
-            )}
           </div>
           {key.game && (
             <div className="mt-4 rounded-lg border border-white/10 bg-[#1a1a1a] p-6">
@@ -321,7 +261,7 @@ export default function KeyDetailsPage() {
             <code>{key.keyCode}</code>
           </pre>
           <button
-            className="absolute right-4 top-4 rounded bg-[#1a1a1a] p-2 text-[#00ff9d] transition-all hover:bg-[#2a2a2a]"
+            className="absolute right-4 top-4 rounded bg-[#1a1a1a] p-2 text-[#00ff9d] transition-all hover:bg-[#2a2a2a] hover:scale-110 transform duration-300"
             onClick={() => {
               navigator.clipboard.writeText(key.keyCode)
               alert("Key copied to clipboard!")

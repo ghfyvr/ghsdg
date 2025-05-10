@@ -112,7 +112,8 @@ export default function Header() {
         {isMobile && (
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-white p-2 rounded hover:bg-[rgba(255,62,62,0.1)] transition-all"
+            className="md:hidden flex items-center justify-center h-10 w-10 rounded-full bg-[rgba(255,62,62,0.1)] text-[#ff3e3e] transition-all hover:bg-[rgba(255,62,62,0.2)] hover:scale-110"
+            aria-label="Toggle mobile menu"
           >
             <i className={`fas ${mobileMenuOpen ? "fa-times" : "fa-bars"} text-xl`}></i>
           </button>
@@ -315,50 +316,51 @@ export default function Header() {
           </ul>
         </nav>
 
-        {/* Mobile Navigation Menu */}
+        {/* Mobile Navigation Sidebar */}
         {isMobile && (
           <div
             ref={mobileMenuRef}
-            className={`fixed top-[72px] right-0 h-screen w-64 bg-[#0a0a0a] shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${
+            className={`fixed top-0 right-0 h-screen w-72 bg-[#0a0a0a] shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${
               mobileMenuOpen ? "translate-x-0" : "translate-x-full"
             }`}
+            style={{ paddingTop: "72px" }}
           >
-            <div className="py-4">
-              <ul className="space-y-2 px-4">
+            <div className="h-full overflow-y-auto py-4 scrollbar-thin scrollbar-thumb-[#ff3e3e] scrollbar-track-[#1a1a1a]">
+              <ul className="space-y-1 px-3">
                 <li>
                   <Link
                     href="/"
-                    className={`flex items-center rounded px-4 py-3 text-sm font-medium transition-all ${
+                    className={`flex items-center rounded-lg px-4 py-3 text-sm font-medium transition-all transform hover:scale-105 ${
                       isActive("/")
-                        ? "bg-[rgba(255,62,62,0.1)] text-[#ff3e3e]"
+                        ? "bg-[rgba(255,62,62,0.15)] text-[#ff3e3e]"
                         : "text-white hover:bg-[rgba(255,62,62,0.1)] hover:text-[#ff3e3e]"
                     }`}
                   >
-                    <i className="fas fa-home mr-2 w-6"></i> Home
+                    <i className="fas fa-home mr-3 w-5 text-center"></i> Home
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="/scripts"
-                    className={`flex items-center rounded px-4 py-3 text-sm font-medium transition-all ${
+                    className={`flex items-center rounded-lg px-4 py-3 text-sm font-medium transition-all transform hover:scale-105 ${
                       isActive("/scripts")
-                        ? "bg-[rgba(255,62,62,0.1)] text-[#ff3e3e]"
+                        ? "bg-[rgba(255,62,62,0.15)] text-[#ff3e3e]"
                         : "text-white hover:bg-[rgba(255,62,62,0.1)] hover:text-[#ff3e3e]"
                     }`}
                   >
-                    <i className="fas fa-code mr-2 w-6"></i> Scripts
+                    <i className="fas fa-code mr-3 w-5 text-center"></i> Scripts
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="/key-generator"
-                    className={`flex items-center rounded px-4 py-3 text-sm font-medium transition-all ${
+                    className={`flex items-center rounded-lg px-4 py-3 text-sm font-medium transition-all transform hover:scale-105 ${
                       isActive("/key-generator")
-                        ? "bg-[rgba(255,62,62,0.1)] text-[#ff3e3e]"
+                        ? "bg-[rgba(255,62,62,0.15)] text-[#ff3e3e]"
                         : "text-white hover:bg-[rgba(255,62,62,0.1)] hover:text-[#ff3e3e]"
                     }`}
                   >
-                    <i className="fas fa-key mr-2 w-6"></i> Key Generator
+                    <i className="fas fa-key mr-3 w-5 text-center"></i> Key Generator
                   </Link>
                 </li>
                 <li>
@@ -366,45 +368,45 @@ export default function Header() {
                     href="https://discord.gg/ZWCqcuxAv3"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center rounded px-4 py-3 text-sm font-medium text-white transition-all hover:bg-[rgba(255,62,62,0.1)] hover:text-[#ff3e3e]"
+                    className="flex items-center rounded-lg px-4 py-3 text-sm font-medium text-white transition-all transform hover:scale-105 hover:bg-[rgba(88,101,242,0.1)] hover:text-[#5865F2]"
                   >
-                    <i className="fab fa-discord mr-2 w-6 text-[#5865F2]"></i> Discord
+                    <i className="fab fa-discord mr-3 w-5 text-center text-[#5865F2]"></i> Discord
                   </a>
                 </li>
                 <li>
                   <Link
                     href="/premium-key"
-                    className={`flex items-center rounded px-4 py-3 text-sm font-medium transition-all ${
+                    className={`flex items-center rounded-lg px-4 py-3 text-sm font-medium transition-all transform hover:scale-105 ${
                       isActive("/premium-key")
-                        ? "bg-[rgba(255,62,62,0.1)] text-[#ff3e3e]"
+                        ? "bg-[rgba(255,62,62,0.15)] text-[#ff3e3e]"
                         : "text-white hover:bg-[rgba(255,62,62,0.1)] hover:text-[#ff3e3e]"
                     }`}
                   >
-                    <i className="fas fa-crown mr-2 w-6"></i> Premium Key
+                    <i className="fas fa-crown mr-3 w-5 text-center"></i> Premium Key
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="/executors"
-                    className={`flex items-center rounded px-4 py-3 text-sm font-medium transition-all ${
+                    className={`flex items-center rounded-lg px-4 py-3 text-sm font-medium transition-all transform hover:scale-105 ${
                       isActive("/executors")
-                        ? "bg-[rgba(255,62,62,0.1)] text-[#ff3e3e]"
+                        ? "bg-[rgba(255,62,62,0.15)] text-[#ff3e3e]"
                         : "text-white hover:bg-[rgba(255,62,62,0.1)] hover:text-[#ff3e3e]"
                     }`}
                   >
-                    <i className="fas fa-terminal mr-2 w-6"></i> Executors
+                    <i className="fas fa-terminal mr-3 w-5 text-center"></i> Executors
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="/upload-keys"
-                    className={`flex items-center rounded px-4 py-3 text-sm font-medium transition-all ${
+                    className={`flex items-center rounded-lg px-4 py-3 text-sm font-medium transition-all transform hover:scale-105 ${
                       isActive("/upload-keys")
-                        ? "bg-[rgba(255,62,62,0.1)] text-[#ff3e3e]"
+                        ? "bg-[rgba(255,62,62,0.15)] text-[#ff3e3e]"
                         : "text-white hover:bg-[rgba(255,62,62,0.1)] hover:text-[#ff3e3e]"
                     }`}
                   >
-                    <i className="fas fa-upload mr-2 w-6"></i> Upload Keys
+                    <i className="fas fa-upload mr-3 w-5 text-center"></i> Upload Keys
                   </Link>
                 </li>
 
@@ -413,7 +415,7 @@ export default function Header() {
                     <li className="border-t border-white/10 pt-2 mt-2">
                       <div className="flex items-center px-4 py-3">
                         {profilePicture ? (
-                          <div className="h-8 w-8 overflow-hidden rounded-full mr-2 border-2 border-[#ff3e3e]/30">
+                          <div className="h-10 w-10 overflow-hidden rounded-full mr-3 border-2 border-[#ff3e3e]/30">
                             <img
                               src={profilePicture || "/placeholder.svg"}
                               alt={user.username}
@@ -421,7 +423,7 @@ export default function Header() {
                             />
                           </div>
                         ) : (
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#ff3e3e] mr-2 border-2 border-[#ff3e3e]/30 shadow-md">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1a1a1a] text-[#ff3e3e] mr-3 border-2 border-[#ff3e3e]/30 shadow-md">
                             {user.username.charAt(0).toUpperCase()}
                           </div>
                         )}
@@ -431,59 +433,59 @@ export default function Header() {
                     <li>
                       <Link
                         href={`/profile/${user.username}`}
-                        className={`flex items-center rounded px-4 py-3 text-sm font-medium transition-all ${
+                        className={`flex items-center rounded-lg px-4 py-3 text-sm font-medium transition-all transform hover:scale-105 ${
                           isActive(`/profile/${user.username}`)
-                            ? "bg-[rgba(255,62,62,0.1)] text-[#ff3e3e]"
+                            ? "bg-[rgba(255,62,62,0.15)] text-[#ff3e3e]"
                             : "text-white hover:bg-[rgba(255,62,62,0.1)] hover:text-[#ff3e3e]"
                         }`}
                       >
-                        <i className="fas fa-user mr-2 w-6"></i> My Profile
+                        <i className="fas fa-user mr-3 w-5 text-center"></i> My Profile
                       </Link>
                     </li>
                     <li>
                       <Link
                         href="/settings"
-                        className={`flex items-center rounded px-4 py-3 text-sm font-medium transition-all ${
+                        className={`flex items-center rounded-lg px-4 py-3 text-sm font-medium transition-all transform hover:scale-105 ${
                           isActive("/settings")
-                            ? "bg-[rgba(255,62,62,0.1)] text-[#ff3e3e]"
+                            ? "bg-[rgba(255,62,62,0.15)] text-[#ff3e3e]"
                             : "text-white hover:bg-[rgba(255,62,62,0.1)] hover:text-[#ff3e3e]"
                         }`}
                       >
-                        <i className="fas fa-cog mr-2 w-6"></i> Settings
+                        <i className="fas fa-cog mr-3 w-5 text-center"></i> Settings
                       </Link>
                     </li>
                     <li>
                       <Link
                         href="/upload-scripts"
-                        className={`flex items-center rounded px-4 py-3 text-sm font-medium transition-all ${
+                        className={`flex items-center rounded-lg px-4 py-3 text-sm font-medium transition-all transform hover:scale-105 ${
                           isActive("/upload-scripts")
-                            ? "bg-[rgba(255,62,62,0.1)] text-[#ff3e3e]"
+                            ? "bg-[rgba(255,62,62,0.15)] text-[#ff3e3e]"
                             : "text-white hover:bg-[rgba(255,62,62,0.1)] hover:text-[#ff3e3e]"
                         }`}
                       >
-                        <i className="fas fa-upload mr-2 w-6"></i> Upload Scripts
+                        <i className="fas fa-upload mr-3 w-5 text-center"></i> Upload Scripts
                       </Link>
                     </li>
                     {userIsAdmin && (
                       <li>
                         <Link
                           href="/admin-dashboard"
-                          className={`flex items-center rounded px-4 py-3 text-sm font-medium transition-all ${
+                          className={`flex items-center rounded-lg px-4 py-3 text-sm font-medium transition-all transform hover:scale-105 ${
                             isActive("/admin-dashboard")
-                              ? "bg-[rgba(255,62,62,0.1)] text-[#ff3e3e]"
+                              ? "bg-[rgba(255,62,62,0.15)] text-[#ff3e3e]"
                               : "text-white hover:bg-[rgba(255,62,62,0.1)] hover:text-[#ff3e3e]"
                           }`}
                         >
-                          <i className="fas fa-shield-alt mr-2 w-6"></i> Admin Dashboard
+                          <i className="fas fa-shield-alt mr-3 w-5 text-center"></i> Admin Dashboard
                         </Link>
                       </li>
                     )}
-                    <li>
+                    <li className="px-3 pt-2">
                       <button
                         onClick={logout}
-                        className="w-full flex items-center rounded px-4 py-3 text-sm font-medium text-white transition-all hover:bg-[rgba(255,0,0,0.1)] hover:text-red-400"
+                        className="w-full flex items-center rounded-lg px-4 py-3 text-sm font-medium text-white transition-all transform hover:scale-105 hover:bg-[rgba(255,0,0,0.1)] hover:text-red-400"
                       >
-                        <i className="fas fa-sign-out-alt mr-2 w-6"></i> Logout
+                        <i className="fas fa-sign-out-alt mr-3 w-5 text-center"></i> Logout
                       </button>
                     </li>
                   </>
@@ -492,17 +494,17 @@ export default function Header() {
                     <li className="border-t border-white/10 pt-2 mt-2">
                       <Link
                         href="/login"
-                        className="flex items-center rounded px-4 py-3 text-sm font-medium text-white transition-all hover:bg-[rgba(255,62,62,0.1)] hover:text-[#ff3e3e]"
+                        className="flex items-center rounded-lg px-4 py-3 text-sm font-medium text-white transition-all transform hover:scale-105 hover:bg-[rgba(255,62,62,0.1)] hover:text-[#ff3e3e]"
                       >
-                        <i className="fas fa-sign-in-alt mr-2 w-6"></i> Login
+                        <i className="fas fa-sign-in-alt mr-3 w-5 text-center"></i> Login
                       </Link>
                     </li>
                     <li>
                       <Link
                         href="/signup"
-                        className="flex items-center rounded px-4 py-3 text-sm font-medium text-white transition-all hover:bg-[rgba(255,62,62,0.1)] hover:text-[#ff3e3e]"
+                        className="flex items-center rounded-lg px-4 py-3 text-sm font-medium text-white transition-all transform hover:scale-105 hover:bg-[rgba(255,62,62,0.1)] hover:text-[#ff3e3e]"
                       >
-                        <i className="fas fa-user-plus mr-2 w-6"></i> Sign Up
+                        <i className="fas fa-user-plus mr-3 w-5 text-center"></i> Sign Up
                       </Link>
                     </li>
                   </>
@@ -510,6 +512,11 @@ export default function Header() {
               </ul>
             </div>
           </div>
+        )}
+
+        {/* Add a semi-transparent overlay when mobile menu is open */}
+        {mobileMenuOpen && isMobile && (
+          <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setMobileMenuOpen(false)} />
         )}
       </div>
     </header>
