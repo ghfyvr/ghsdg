@@ -48,7 +48,7 @@ export default function LoginPage() {
 
   return (
     <div className="container mx-auto px-5 py-12">
-      <div className="mx-auto max-w-md rounded-lg border-l-4 border-[#00ff9d] bg-[#1a1a1a] p-8 shadow-lg">
+      <div className="mx-auto max-w-md rounded-lg border-l-4 border-[#ff3e3e] bg-[#1a1a1a] p-8 shadow-lg">
         <h1 className="mb-6 text-2xl font-bold text-white">Login to NEXUS</h1>
 
         {(error || errorParam) && (
@@ -59,7 +59,7 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="username" className="mb-2 block font-medium text-[#00ff9d]">
+            <label htmlFor="username" className="mb-2 block font-medium text-[#ff3e3e]">
               Username
             </label>
             <input
@@ -67,12 +67,12 @@ export default function LoginPage() {
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#00ff9d] focus:outline-none focus:ring-1 focus:ring-[#00ff9d]"
+              className="input-focus-effect w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e]"
             />
           </div>
 
           <div className="mb-6">
-            <label htmlFor="password" className="mb-2 block font-medium text-[#00ff9d]">
+            <label htmlFor="password" className="mb-2 block font-medium text-[#ff3e3e]">
               Password
             </label>
             <input
@@ -80,18 +80,18 @@ export default function LoginPage() {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#00ff9d] focus:outline-none focus:ring-1 focus:ring-[#00ff9d]"
+              className="input-focus-effect w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e]"
             />
           </div>
 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full rounded bg-gradient-to-r from-[#00ff9d] to-[#00b8ff] px-4 py-3 font-semibold text-[#050505] transition-all hover:shadow-lg hover:shadow-[#00ff9d]/20 disabled:opacity-50"
+            className="interactive-element button-glow button-3d w-full rounded bg-gradient-to-r from-[#ff3e3e] to-[#ff0000] px-4 py-3 font-semibold text-white transition-all hover:shadow-lg hover:shadow-[#ff3e3e]/20 disabled:opacity-50"
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#050505]/20 border-t-[#050505]"></div>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"></div>
                 <span>Logging in...</span>
               </div>
             ) : (
@@ -102,7 +102,7 @@ export default function LoginPage() {
 
         <div className="mt-6 text-center text-sm text-gray-400">
           Don&apos;t have an account?{" "}
-          <Link href="/signup" className="text-[#00c6ed] hover:underline">
+          <Link href="/signup" className="text-[#ff3e3e] hover:underline">
             Sign Up
           </Link>
         </div>
@@ -110,7 +110,7 @@ export default function LoginPage() {
         <div className="mt-4 text-center">
           <Link
             href="/api/discord/login"
-            className="inline-flex items-center rounded bg-[#5865F2] px-4 py-2 font-semibold text-white transition-all hover:bg-[#4752C4]"
+            className="interactive-element button-glow inline-flex items-center rounded bg-[#5865F2] px-4 py-2 font-semibold text-white transition-all hover:bg-[#4752C4]"
           >
             <i className="fab fa-discord mr-2"></i> Login with Discord
           </Link>

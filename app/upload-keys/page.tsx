@@ -5,11 +5,14 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/use-auth"
-import { isAdmin } from "@/lib/admin"
 import Link from "next/link"
 
 // Add these imports at the top
 import { fetchGameDetailsById, fetchGameDetailsByName } from "@/app/actions/fetch-game-details"
+
+// Define the admin token constant
+const ADMIN_TOKEN_KEY =
+  "nexus_admin_token_Do_Not_Share_Leave_Console_Do_Not_Copy----_____-----3258ujaefhih328v6ha fhhag nFB@&F WDHB G#T*&HAF< #GQY* AKJFEB@*F ASLQ#*R(sdfb3ut93"
 
 export default function UploadKeysPage() {
   const { user, isLoading } = useAuth()
@@ -34,39 +37,36 @@ export default function UploadKeysPage() {
   const [gameSearchResults, setGameSearchResults] = useState<any[]>([])
   const [showSearchResults, setShowSearchResults] = useState(false)
 
+  // List of admin usernames
+  const adminUsernames = ["admin", "owner", "nexus", "volt", "Nexus", "Voltrex", "Furky", "Ocean"]
+
   useEffect(() => {
-    if (isLoading) return
+    const checkAdminAccess = () => {
+      if (isLoading) return
 
-    if (!user) {
-      // Use window.location for a hard navigation that will refresh the page
-      window.location.href = "/login"
-      return
-    }
-
-    // Check if user is admin
-    const checkAdminStatus = async () => {
-      try {
-        const adminStatus = await isAdmin(user.username)
-        setUserIsAdmin(adminStatus)
-
-        // If not admin, redirect to home
-        if (!adminStatus) {
-          console.log("User is not admin, redirecting...")
-          // Use window.location for a hard navigation that will refresh the page
-          window.location.href = "/"
-        }
-      } catch (error) {
-        console.error("Error checking admin status:", error)
-        setUserIsAdmin(false)
-        // Use window.location for a hard navigation that will refresh the page
-        window.location.href = "/"
-      } finally {
+      // Check if user is admin by username only
+      if (user) {
+        const isUserAdmin = adminUsernames.includes(user.username)
+        setUserIsAdmin(isUserAdmin)
         setAdminCheckComplete(true)
+        return
       }
+
+      // If not logged in, check for admin token in localStorage
+      const adminToken = localStorage.getItem(ADMIN_TOKEN_KEY)
+      if (adminToken) {
+        setUserIsAdmin(true)
+        setAdminCheckComplete(true)
+        return
+      }
+
+      // Not an admin, set state accordingly
+      setUserIsAdmin(false)
+      setAdminCheckComplete(true)
     }
 
-    checkAdminStatus()
-  }, [user, isLoading, router])
+    checkAdminAccess()
+  }, [user, isLoading])
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -178,13 +178,16 @@ export default function UploadKeysPage() {
     try {
       setIsUploading(true)
 
+      // Get author name - use user.username if logged in, or "NEXUS Admin" if not
+      const authorName = user ? user.username : "NEXUS Admin"
+
       // Create a key object
       const key = {
         id: `key-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
         title: keyTitle,
         description: keyDescription,
         keyCode: keyCode,
-        author: user?.username,
+        author: authorName,
         createdAt: new Date().toISOString(),
         imageUrl: imageUrl,
         likes: [], // Initialize empty likes array
@@ -240,39 +243,49 @@ export default function UploadKeysPage() {
       <div className="container mx-auto px-5 py-16">
         <div className="mx-auto max-w-2xl">
           <div className="flex items-center justify-center py-12">
-            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-[#00ff9d]"></div>
+            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-[#ff3e3e]"></div>
           </div>
         </div>
       </div>
     )
   }
 
-  if (!user) return null
-
   if (!userIsAdmin) {
     return (
       <div className="container mx-auto px-5 py-16">
         <div className="mx-auto max-w-2xl">
-          <h1 className="mb-8 text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#00ff9d] to-[#00b8ff]">
+          <h1 className="mb-8 text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#ff3e3e] to-[#ff0000]">
             Upload Key
           </h1>
 
-          <div className="rounded-lg border-l-4 border-red-500 bg-[#1a1a1a] p-8 text-center">
-            <div className="mb-4 text-5xl text-red-400">
+          <div className="rounded-lg border-l-4 border-[#ff3e3e] bg-[#1a1a1a] p-8 text-center">
+            <div className="mb-4 text-5xl text-[#ff3e3e]">
               <i className="fas fa-lock"></i>
             </div>
             <h2 className="mb-2 text-xl font-bold text-white">Admin Access Required</h2>
             <p className="mb-6 text-gray-400">Only administrators can upload keys to the NEXUS platform.</p>
-            <Link
-              href="/key-generator"
-              className="inline-flex items-center rounded bg-gradient-to-r from-[#00ff9d] to-[#00b8ff] px-6 py-3 font-semibold text-[#050505] transition-all hover:shadow-lg hover:shadow-[#00ff9d]/20"
-              onClick={(e) => {
-                e.preventDefault()
-                window.location.href = "/key-generator"
-              }}
-            >
-              <i className="fas fa-arrow-left mr-2"></i> Back to Keys
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/key-generator"
+                className="interactive-element button-glow button-3d inline-flex items-center rounded bg-gradient-to-r from-[#ff3e3e] to-[#ff0000] px-6 py-3 font-semibold text-white transition-all hover:shadow-lg hover:shadow-[#ff3e3e]/20"
+                onClick={(e) => {
+                  e.preventDefault()
+                  window.location.href = "/key-generator"
+                }}
+              >
+                <i className="fas fa-arrow-left mr-2"></i> Back to Keys
+              </Link>
+              <button
+                onClick={() => {
+                  // Set admin token and reload page
+                  localStorage.setItem(ADMIN_TOKEN_KEY, "true")
+                  window.location.reload()
+                }}
+                className="interactive-element button-shine inline-flex items-center rounded bg-[#1a1a1a] border border-[#ff3e3e] px-6 py-3 font-semibold text-[#ff3e3e] transition-all hover:bg-[#ff3e3e]/10"
+              >
+                <i className="fas fa-user-shield mr-2"></i> Admin Login
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -282,7 +295,7 @@ export default function UploadKeysPage() {
   return (
     <div className="container mx-auto px-5 py-16">
       <div className="mx-auto max-w-2xl">
-        <h1 className="mb-8 text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#00ff9d] to-[#00b8ff]">
+        <h1 className="mb-8 text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#ff3e3e] to-[#ff0000]">
           Upload Key
         </h1>
 
@@ -296,9 +309,9 @@ export default function UploadKeysPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="rounded-lg border-l-4 border-[#00ff9d] bg-[#1a1a1a] p-8">
+        <form onSubmit={handleSubmit} className="rounded-lg border-l-4 border-[#ff3e3e] bg-[#1a1a1a] p-8">
           <div className="mb-6">
-            <label className="mb-2 block font-medium text-[#00ff9d]">Game Search</label>
+            <label className="mb-2 block font-medium text-[#ff3e3e]">Game Search</label>
 
             <div className="mb-4 flex gap-4">
               <button
@@ -307,9 +320,9 @@ export default function UploadKeysPage() {
                   setSearchMethod("id")
                   setShowSearchResults(false)
                 }}
-                className={`flex-1 rounded px-4 py-2 ${
+                className={`interactive-element flex-1 rounded px-4 py-2 ${
                   searchMethod === "id"
-                    ? "bg-[#00c6ed] text-[#050505] font-semibold"
+                    ? "bg-[#ff3e3e] text-white font-semibold"
                     : "bg-[#050505] text-white border border-white/10"
                 }`}
               >
@@ -321,9 +334,9 @@ export default function UploadKeysPage() {
                   setSearchMethod("name")
                   setShowSearchResults(false)
                 }}
-                className={`flex-1 rounded px-4 py-2 ${
+                className={`interactive-element flex-1 rounded px-4 py-2 ${
                   searchMethod === "name"
-                    ? "bg-[#00c6ed] text-[#050505] font-semibold"
+                    ? "bg-[#ff3e3e] text-white font-semibold"
                     : "bg-[#050505] text-white border border-white/10"
                 }`}
               >
@@ -342,18 +355,18 @@ export default function UploadKeysPage() {
                     id="gameId"
                     value={gameId}
                     onChange={(e) => setGameId(e.target.value)}
-                    className="flex-1 rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#00c6ed] focus:outline-none focus:ring-1 focus:ring-[#00c6ed]"
+                    className="input-focus-effect flex-1 rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e]"
                     placeholder="Enter Roblox game ID"
                   />
                   <button
                     type="button"
                     onClick={handleFetchGameDetailsById}
                     disabled={isLoadingGame}
-                    className="rounded bg-[#00c6ed] px-4 py-3 font-semibold text-[#050505] transition-all hover:bg-[#00b8ff] disabled:opacity-50"
+                    className="interactive-element button-glow rounded bg-[#ff3e3e] px-4 py-3 font-semibold text-white transition-all hover:bg-[#ff0000] disabled:opacity-50"
                   >
                     {isLoadingGame ? (
                       <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#050505]/20 border-t-[#050505]"></div>
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"></div>
                         <span>Loading...</span>
                       </div>
                     ) : (
@@ -373,18 +386,18 @@ export default function UploadKeysPage() {
                     id="gameName"
                     value={gameName}
                     onChange={(e) => setGameName(e.target.value)}
-                    className="flex-1 rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#00c6ed] focus:outline-none focus:ring-1 focus:ring-[#00c6ed]"
+                    className="input-focus-effect flex-1 rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e]"
                     placeholder="Enter Roblox game name"
                   />
                   <button
                     type="button"
                     onClick={handleSearchGamesByName}
                     disabled={isLoadingGame}
-                    className="rounded bg-[#00c6ed] px-4 py-3 font-semibold text-[#050505] transition-all hover:bg-[#00b8ff] disabled:opacity-50"
+                    className="interactive-element button-glow rounded bg-[#ff3e3e] px-4 py-3 font-semibold text-white transition-all hover:bg-[#ff0000] disabled:opacity-50"
                   >
                     {isLoadingGame ? (
                       <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#050505]/20 border-t-[#050505]"></div>
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"></div>
                         <span>Loading...</span>
                       </div>
                     ) : (
@@ -405,7 +418,7 @@ export default function UploadKeysPage() {
                   {gameSearchResults.map((game) => (
                     <div
                       key={game.gameId}
-                      className="flex cursor-pointer items-center gap-3 rounded p-2 transition-all hover:bg-[#1a1a1a]"
+                      className="interactive-element flex cursor-pointer items-center gap-3 rounded p-2 transition-all hover:bg-[#1a1a1a]"
                       onClick={() => handleSelectGame(game)}
                     >
                       <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded">
@@ -452,7 +465,7 @@ export default function UploadKeysPage() {
           )}
 
           <div className="mb-6">
-            <label htmlFor="keyTitle" className="mb-2 block font-medium text-[#00ff9d]">
+            <label htmlFor="keyTitle" className="mb-2 block font-medium text-[#ff3e3e]">
               Key Title
             </label>
             <input
@@ -460,23 +473,23 @@ export default function UploadKeysPage() {
               id="keyTitle"
               value={keyTitle}
               onChange={(e) => setKeyTitle(e.target.value)}
-              className="w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#00ff9d] focus:outline-none focus:ring-1 focus:ring-[#00ff9d]"
+              className="input-focus-effect w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e]"
               placeholder="Enter a title for your key"
             />
           </div>
 
           <div className="mb-6">
-            <label htmlFor="keyImage" className="mb-2 block font-medium text-[#00ff9d]">
+            <label htmlFor="keyImage" className="mb-2 block font-medium text-[#ff3e3e]">
               Key Image
             </label>
             <div className="mb-2">
               <input type="file" id="keyImage" accept="image/*" onChange={handleImageUpload} className="hidden" />
               <label
                 htmlFor="keyImage"
-                className="flex cursor-pointer items-center justify-center rounded border border-dashed border-white/20 bg-[#050505] p-4 transition-all hover:border-[#00ff9d]/50"
+                className="interactive-element flex cursor-pointer items-center justify-center rounded border border-dashed border-white/20 bg-[#050505] p-4 transition-all hover:border-[#ff3e3e]/50"
               >
                 <div className="text-center">
-                  <i className="fas fa-upload mb-2 text-2xl text-[#00ff9d]"></i>
+                  <i className="fas fa-upload mb-2 text-2xl text-[#ff3e3e]"></i>
                   <p className="text-sm text-gray-400">Click to upload key image (max 2MB)</p>
                 </div>
               </label>
@@ -491,7 +504,7 @@ export default function UploadKeysPage() {
                   <button
                     type="button"
                     onClick={() => setImageUrl("")}
-                    className="rounded bg-red-500/20 px-3 py-1 text-xs text-red-300 transition-all hover:bg-red-500/30"
+                    className="interactive-element rounded bg-red-500/20 px-3 py-1 text-xs text-red-300 transition-all hover:bg-red-500/30"
                   >
                     <i className="fas fa-times mr-1"></i> Remove
                   </button>
@@ -501,14 +514,14 @@ export default function UploadKeysPage() {
           </div>
 
           <div className="mb-6">
-            <label htmlFor="keyDescription" className="mb-2 block font-medium text-[#00ff9d]">
+            <label htmlFor="keyDescription" className="mb-2 block font-medium text-[#ff3e3e]">
               Description
             </label>
             <textarea
               id="keyDescription"
               value={keyDescription}
               onChange={(e) => setKeyDescription(e.target.value)}
-              className="w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#00ff9d] focus:outline-none focus:ring-1 focus:ring-[#00ff9d]"
+              className="input-focus-effect w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e]"
               rows={3}
               placeholder="Describe what this key is for"
               maxLength={500}
@@ -517,14 +530,14 @@ export default function UploadKeysPage() {
           </div>
 
           <div className="mb-6">
-            <label htmlFor="keyCode" className="mb-2 block font-medium text-[#00ff9d]">
+            <label htmlFor="keyCode" className="mb-2 block font-medium text-[#ff3e3e]">
               Key Code
             </label>
             <textarea
               id="keyCode"
               value={keyCode}
               onChange={(e) => setKeyCode(e.target.value)}
-              className="font-mono w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#00ff9d] focus:outline-none focus:ring-1 focus:ring-[#00ff9d]"
+              className="input-focus-effect font-mono w-full rounded border border-white/10 bg-[#050505] px-4 py-3 text-white transition-all focus:border-[#ff3e3e] focus:outline-none focus:ring-1 focus:ring-[#ff3e3e]"
               rows={5}
               placeholder="Enter the key code or link"
             />
@@ -536,7 +549,7 @@ export default function UploadKeysPage() {
                 type="checkbox"
                 checked={isPremium}
                 onChange={() => setIsPremium(!isPremium)}
-                className="h-4 w-4 rounded border-white/10 bg-[#050505] text-[#BA55D3]"
+                className="h-4 w-4 rounded border-white/10 bg-[#050505] text-[#ff3e3e]"
               />
               <span className="text-white">Mark as Premium Key</span>
             </label>
@@ -546,11 +559,11 @@ export default function UploadKeysPage() {
           <button
             type="submit"
             disabled={isUploading}
-            className="w-full rounded bg-gradient-to-r from-[#00ff9d] to-[#00b8ff] px-4 py-3 font-semibold text-[#050505] transition-all hover:shadow-lg hover:shadow-[#00ff9d]/20 disabled:opacity-50"
+            className="interactive-element button-glow button-3d w-full rounded bg-gradient-to-r from-[#ff3e3e] to-[#ff0000] px-4 py-3 font-semibold text-white transition-all hover:shadow-lg hover:shadow-[#ff3e3e]/20 disabled:opacity-50"
           >
             {isUploading ? (
               <div className="flex items-center justify-center gap-2">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#050505]/20 border-t-[#050505]"></div>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"></div>
                 <span>Uploading...</span>
               </div>
             ) : (

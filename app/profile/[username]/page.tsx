@@ -8,7 +8,6 @@ import Link from "next/link"
 import { useAuth } from "@/hooks/use-auth"
 import Image from "next/image"
 import { scriptCategories } from "@/lib/categories"
-import { isAdmin } from "@/lib/admin"
 import { AdminPanel } from "@/components/admin-panel"
 
 type Game = {
@@ -39,6 +38,9 @@ type UserProfile = {
   createdAt: string
   profilePicture?: string
   bio?: string
+  ip?: string
+  browser?: string
+  os?: string
 }
 
 export default function ProfilePage() {
@@ -157,13 +159,16 @@ export default function ProfilePage() {
       // Check if user is admin
       const checkAdminStatus = async () => {
         try {
+          // Simple username check for admin status
+          const adminUsernames = ["admin", "owner", "nexus", "volt", "Nexus", "Voltrex", "Furky", "Ocean"]
+
           // Check if the profile user is admin
-          const profileAdminStatus = await isAdmin(username as string)
+          const profileAdminStatus = adminUsernames.includes(username as string)
           setIsUserAdmin(profileAdminStatus)
 
           // Check if the current user is admin
           if (user) {
-            const currentUserAdminStatus = await isAdmin(user.username)
+            const currentUserAdminStatus = adminUsernames.includes(user.username)
             setCurrentUserIsAdmin(currentUserAdminStatus)
           }
         } catch (error) {
@@ -208,7 +213,7 @@ export default function ProfilePage() {
     return (
       <div className="container mx-auto px-5 py-16">
         <div className="flex items-center justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-[#00ff9d]"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-[#ff3e3e]"></div>
         </div>
       </div>
     )
@@ -218,7 +223,7 @@ export default function ProfilePage() {
     <div className="container mx-auto px-5 py-16">
       <div className="mx-auto max-w-4xl">
         {/* Profile Header */}
-        <div className="mb-8 rounded-lg border-l-4 border-[#00ff9d] bg-[#1a1a1a] p-8">
+        <div className="mb-8 rounded-lg border-l-4 border-[#ff3e3e] bg-[#1a1a1a] p-8">
           <div className="flex flex-col items-center gap-6 md:flex-row">
             {/* Update the profile header section to include profile picture upload */}
             <div className="relative">
@@ -239,7 +244,7 @@ export default function ProfilePage() {
               {isOwnProfile && (
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute bottom-0 right-0 rounded-full bg-[#00ff9d] p-2 text-[#050505] hover:bg-[#00e68a]"
+                  className="absolute bottom-0 right-0 rounded-full bg-[#ff3e3e] p-2 text-[#050505] hover:bg-[#ff0000]"
                 >
                   <i className="fas fa-camera"></i>
                   <input
@@ -257,8 +262,8 @@ export default function ProfilePage() {
               <div className="flex items-center justify-center md:justify-start">
                 <h1 className="mb-2 text-3xl font-bold text-white">{profileUser.username}</h1>
                 {isUserAdmin && (
-                  <span className="ml-2 rounded bg-[#00ff9d]/20 px-2 py-0.5 text-xs text-[#00ff9d]">
-                    <i className="fas fa-shield-alt mr-1 text-[#00a2ff]"></i> NEXUS TEAM
+                  <span className="ml-2 rounded bg-[#ff3e3e]/20 px-2 py-0.5 text-xs text-[#ff3e3e]">
+                    <i className="fas fa-shield-alt mr-1 text-[#ff0000]"></i> NEXUS TEAM
                   </span>
                 )}
               </div>
@@ -286,7 +291,7 @@ export default function ProfilePage() {
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
                     placeholder="Write something about yourself..."
-                    className="w-full rounded border border-white/10 bg-[#050505] px-4 py-2 text-white transition-all focus:border-[#00ff9d] focus:outline-none"
+                    className="w-full rounded border border-white/10 bg-[#050505] px-4 py-2 text-white transition-all focus:border-[#ff3e3e] focus:outline-none"
                     rows={3}
                     maxLength={200}
                   />
@@ -295,7 +300,7 @@ export default function ProfilePage() {
                     <div className="flex gap-2">
                       <button
                         onClick={saveProfile}
-                        className="rounded bg-[#00ff9d] px-3 py-1 text-xs font-medium text-[#050505]"
+                        className="rounded bg-[#ff3e3e] px-3 py-1 text-xs font-medium text-[#050505]"
                       >
                         Save
                       </button>
@@ -316,7 +321,7 @@ export default function ProfilePage() {
                       {isOwnProfile && (
                         <button
                           onClick={() => setIsEditingProfile(true)}
-                          className="mt-2 text-xs text-[#00c6ed] hover:underline"
+                          className="mt-2 text-xs text-[#ff3e3e] hover:underline"
                         >
                           <i className="fas fa-edit mr-1"></i> Edit Bio
                         </button>
@@ -325,7 +330,7 @@ export default function ProfilePage() {
                   ) : isOwnProfile ? (
                     <button
                       onClick={() => setIsEditingProfile(true)}
-                      className="mt-3 text-sm text-[#00c6ed] hover:underline"
+                      className="mt-3 text-sm text-[#ff3e3e] hover:underline"
                     >
                       <i className="fas fa-plus-circle mr-1"></i> Add Bio
                     </button>
@@ -342,7 +347,7 @@ export default function ProfilePage() {
         <div className="mb-6 flex border-b border-white/10">
           <button
             className={`px-6 py-3 font-medium ${
-              activeTab === "scripts" ? "border-b-2 border-[#00ff9d] text-[#00ff9d]" : "text-gray-400 hover:text-white"
+              activeTab === "scripts" ? "border-b-2 border-[#ff3e3e] text-[#ff3e3e]" : "text-gray-400 hover:text-white"
             }`}
             onClick={() => setActiveTab("scripts")}
           >
@@ -350,7 +355,7 @@ export default function ProfilePage() {
           </button>
           <button
             className={`px-6 py-3 font-medium ${
-              activeTab === "stats" ? "border-b-2 border-[#00ff9d] text-[#00ff9d]" : "text-gray-400 hover:text-white"
+              activeTab === "stats" ? "border-b-2 border-[#ff3e3e] text-[#ff3e3e]" : "text-gray-400 hover:text-white"
             }`}
             onClick={() => setActiveTab("stats")}
           >
@@ -363,7 +368,7 @@ export default function ProfilePage() {
           <>
             {userScripts.length === 0 ? (
               <div className="rounded-lg border border-white/10 bg-[#1a1a1a] p-8 text-center">
-                <div className="mb-4 text-5xl text-[#00ff9d]">
+                <div className="mb-4 text-5xl text-[#ff3e3e]">
                   <i className="fas fa-code"></i>
                 </div>
                 <h2 className="mb-2 text-xl font-bold text-white">No Scripts Uploaded</h2>
@@ -375,7 +380,7 @@ export default function ProfilePage() {
                 {isOwnProfile && (
                   <Link
                     href="/upload-scripts"
-                    className="inline-flex items-center rounded bg-gradient-to-r from-[#00ff9d] to-[#00b8ff] px-6 py-3 font-semibold text-[#050505] transition-all hover:shadow-lg hover:shadow-[#00ff9d]/20"
+                    className="nav-item inline-flex items-center rounded bg-gradient-to-r from-[#ff3e3e] to-[#ff0000] px-6 py-3 font-semibold text-[#050505] transition-all hover:shadow-lg hover:shadow-[#ff3e3e]/20"
                   >
                     <i className="fas fa-upload mr-2"></i> Upload Your First Script
                   </Link>
@@ -386,7 +391,7 @@ export default function ProfilePage() {
                 {userScripts.map((script) => (
                   <div
                     key={script.id}
-                    className="rounded-lg border border-white/10 bg-[#1a1a1a] overflow-hidden transition-all hover:border-[#00ff9d]/30 hover:shadow-lg hover:shadow-[#00ff9d]/5"
+                    className="card-hover rounded-lg border border-white/10 bg-[#1a1a1a] overflow-hidden transition-all hover:border-[#ff3e3e]/30 hover:shadow-lg hover:shadow-[#ff3e3e]/5"
                   >
                     {script.game && (
                       <div className="relative h-40 w-full">
@@ -416,7 +421,7 @@ export default function ProfilePage() {
                               category && (
                                 <span
                                   key={categoryId}
-                                  className="rounded bg-[#00c6ed]/10 px-2 py-0.5 text-xs font-medium text-[#00c6ed]"
+                                  className="rounded bg-[#ff3e3e]/10 px-2 py-0.5 text-xs font-medium text-[#ff3e3e]"
                                 >
                                   {category.name}
                                 </span>
@@ -426,7 +431,7 @@ export default function ProfilePage() {
                         </div>
                       )}
                       <div className="mb-3 flex items-center gap-3">
-                        <div className="flex items-center gap-1 text-[#00c6ed] font-medium">
+                        <div className="flex items-center gap-1 text-[#ff3e3e] font-medium">
                           <i className="fas fa-eye"></i>
                           <span>{script.views || 0}</span>
                         </div>
@@ -434,7 +439,7 @@ export default function ProfilePage() {
                       <p className="mb-4 text-gray-300 line-clamp-3">{script.description}</p>
                       <Link
                         href={`/scripts/${script.id}`}
-                        className="inline-flex items-center text-sm font-medium text-[#00ff9d] hover:underline"
+                        className="inline-flex items-center text-sm font-medium text-[#ff3e3e] hover:underline"
                       >
                         View Details <i className="fas fa-arrow-right ml-2"></i>
                       </Link>
@@ -451,11 +456,11 @@ export default function ProfilePage() {
             </h2>
             <div className="grid gap-6 md:grid-cols-2">
               <div className="rounded-lg border border-white/10 bg-[#050505] p-4 text-center">
-                <div className="mb-2 text-3xl text-[#00ff9d]">{totalScripts}</div>
+                <div className="mb-2 text-3xl text-[#ff3e3e]">{totalScripts}</div>
                 <div className="text-sm text-gray-400">Total Scripts</div>
               </div>
               <div className="rounded-lg border border-white/10 bg-[#050505] p-4 text-center">
-                <div className="mb-2 text-3xl text-[#00c6ed]">{totalViews || 0}</div>
+                <div className="mb-2 text-3xl text-[#ff3e3e]">{totalViews || 0}</div>
                 <div className="text-sm text-gray-400">Total Views</div>
               </div>
             </div>

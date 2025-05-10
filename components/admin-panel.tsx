@@ -4,6 +4,10 @@ import { useState, useEffect } from "react"
 import { useAuth } from "@/hooks/use-auth"
 import { isAdmin } from "@/lib/admin"
 
+// Define the admin token constant
+const ADMIN_TOKEN_KEY =
+  "nexus_admin_token_Do_Not_Share_Leave_Console_Do_Not_Copy----_____-----3258ujaefhih328v6ha fhhag nFB@&F WDHB G#T*&HAF< #GQY* AKJFEB@*F ASLQ#*R(sdfb3ut93"
+
 type UserData = {
   username: string
   email?: string
@@ -294,7 +298,7 @@ export function AdminPanel({ username }: { username: string }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-4">
-        <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-t-2 border-[#00ff9d]"></div>
+        <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-t-2 border-[#ff3e3e]"></div>
       </div>
     )
   }
@@ -310,14 +314,14 @@ export function AdminPanel({ username }: { username: string }) {
       <div className="flex flex-wrap gap-3">
         <button
           onClick={() => setShowBanModal(true)}
-          className="rounded bg-red-600 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-red-700"
+          className="interactive-element button-glow rounded bg-red-600 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-red-700"
         >
           <i className="fas fa-ban mr-2"></i> Ban User
         </button>
 
         <button
           onClick={() => setShowDetailsModal(true)}
-          className="rounded bg-[#00c6ed] px-4 py-2 text-sm font-medium text-[#050505] transition-all hover:bg-[#00b8ff]"
+          className="interactive-element button-glow rounded bg-[#ff3e3e] px-4 py-2 text-sm font-medium text-white transition-all hover:bg-[#ff0000]"
         >
           <i className="fas fa-info-circle mr-2"></i> View User Details
         </button>
@@ -328,12 +332,12 @@ export function AdminPanel({ username }: { username: string }) {
             value={newUsername}
             onChange={(e) => setNewUsername(e.target.value)}
             placeholder="New username"
-            className="flex-1 rounded border border-white/10 bg-[#050505] px-3 py-2 text-sm text-white"
+            className="input-focus-effect flex-1 rounded border border-white/10 bg-[#050505] px-3 py-2 text-sm text-white"
           />
           <button
             onClick={handleChangeUsername}
             disabled={!newUsername}
-            className="rounded bg-[#00ff9d] px-4 py-2 text-sm font-medium text-[#050505] transition-all hover:bg-[#00e68a] disabled:opacity-50"
+            className="interactive-element button-glow rounded bg-[#ff3e3e] px-4 py-2 text-sm font-medium text-white transition-all hover:bg-[#ff0000] disabled:opacity-50"
           >
             <i className="fas fa-user-edit mr-2"></i> Change Username
           </button>
@@ -387,7 +391,7 @@ export function AdminPanel({ username }: { username: string }) {
               <select
                 value={banDuration}
                 onChange={(e) => setBanDuration(e.target.value)}
-                className="w-full rounded border border-white/10 bg-[#050505] px-4 py-2 text-white"
+                className="input-focus-effect w-full rounded border border-white/10 bg-[#050505] px-4 py-2 text-white"
               >
                 <option value="permanent">Permanent</option>
                 <option value="1d">1 Day</option>
@@ -403,7 +407,7 @@ export function AdminPanel({ username }: { username: string }) {
               <select
                 value={banReason}
                 onChange={(e) => setBanReason(e.target.value)}
-                className="w-full rounded border border-white/10 bg-[#050505] px-4 py-2 text-white mb-2"
+                className="input-focus-effect w-full rounded border border-white/10 bg-[#050505] px-4 py-2 text-white mb-2"
               >
                 <option value="">Select a reason...</option>
                 <option value="Violation of terms of service">Violation of terms of service</option>
@@ -419,7 +423,7 @@ export function AdminPanel({ username }: { username: string }) {
                 <textarea
                   value={customBanReason}
                   onChange={(e) => setCustomBanReason(e.target.value)}
-                  className="w-full rounded border border-white/10 bg-[#050505] px-4 py-2 text-white"
+                  className="input-focus-effect w-full rounded border border-white/10 bg-[#050505] px-4 py-2 text-white"
                   rows={3}
                   placeholder="Enter custom ban reason..."
                 ></textarea>
@@ -429,13 +433,13 @@ export function AdminPanel({ username }: { username: string }) {
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowBanModal(false)}
-                className="rounded border border-white/10 bg-[#050505] px-4 py-2 text-sm font-medium text-white transition-all hover:bg-[#1a1a1a]"
+                className="interactive-element rounded border border-white/10 bg-[#050505] px-4 py-2 text-sm font-medium text-white transition-all hover:bg-[#1a1a1a]"
               >
                 Cancel
               </button>
               <button
                 onClick={handleBanUser}
-                className="rounded bg-red-600 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-red-700"
+                className="interactive-element button-glow rounded bg-red-600 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-red-700"
               >
                 Confirm Ban
               </button>
@@ -447,12 +451,12 @@ export function AdminPanel({ username }: { username: string }) {
       {/* User Details Modal */}
       {showDetailsModal && userData && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-          <div className="w-full max-w-2xl rounded-lg border-l-4 border-[#00c6ed] bg-[#1a1a1a] p-6 max-h-[80vh] overflow-y-auto">
+          <div className="w-full max-w-2xl rounded-lg border-l-4 border-[#ff3e3e] bg-[#1a1a1a] p-6 max-h-[80vh] overflow-y-auto">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-xl font-bold text-white">User Details: {username}</h3>
               <button
                 onClick={() => setShowDetailsModal(false)}
-                className="rounded-full p-1 text-gray-400 transition-colors hover:bg-gray-800 hover:text-white"
+                className="interactive-element rounded-full p-1 text-gray-400 transition-colors hover:bg-gray-800 hover:text-white"
               >
                 <i className="fas fa-times"></i>
               </button>
@@ -460,7 +464,7 @@ export function AdminPanel({ username }: { username: string }) {
 
             <div className="mb-6 grid gap-4 md:grid-cols-2">
               <div className="rounded border border-white/10 bg-[#050505] p-4">
-                <h4 className="mb-2 font-medium text-[#00c6ed]">Account Information</h4>
+                <h4 className="mb-2 font-medium text-[#ff3e3e]">Account Information</h4>
                 <ul className="space-y-2 text-sm text-gray-300">
                   <li>
                     <span className="text-gray-400">Username:</span> {userData.username}
@@ -491,13 +495,25 @@ export function AdminPanel({ username }: { username: string }) {
               </div>
 
               <div className="rounded border border-white/10 bg-[#050505] p-4">
-                <h4 className="mb-2 font-medium text-[#00c6ed]">Technical Information</h4>
+                <h4 className="mb-2 font-medium text-[#ff3e3e]">Technical Information</h4>
                 <ul className="space-y-2 text-sm text-gray-300">
                   <li>
-                    <span className="text-gray-400">IP Address:</span> {userData.ip || "Unknown"}
+                    <span className="text-gray-400">IP Address:</span>
+                    <span className="font-mono">{userData.ip || "Unknown"}</span>
+                    {userData.ip && (
+                      <a
+                        href={`https://ipinfo.io/${userData.ip}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-2 text-[#ff3e3e] hover:underline"
+                      >
+                        <i className="fas fa-external-link-alt text-xs"></i> Lookup
+                      </a>
+                    )}
                   </li>
                   <li>
-                    <span className="text-gray-400">HWID:</span> {userData.hwid || "Unknown"}
+                    <span className="text-gray-400">HWID:</span>
+                    <span className="font-mono text-xs">{userData.hwid || "Unknown"}</span>
                   </li>
                   <li>
                     <span className="text-gray-400">Last Login:</span> {new Date().toLocaleString()}
@@ -513,7 +529,7 @@ export function AdminPanel({ username }: { username: string }) {
             </div>
 
             <div className="mb-6 rounded border border-white/10 bg-[#050505] p-4">
-              <h4 className="mb-2 font-medium text-[#00c6ed]">Connected Accounts</h4>
+              <h4 className="mb-2 font-medium text-[#ff3e3e]">Connected Accounts</h4>
               {connectedAccounts.length > 0 ? (
                 <ul className="space-y-2 text-sm text-gray-300">
                   {connectedAccounts.map((account, index) => (
@@ -521,7 +537,7 @@ export function AdminPanel({ username }: { username: string }) {
                       <span>{account}</span>
                       <button
                         onClick={() => window.open(`/profile/${account}`, "_blank")}
-                        className="text-[#00c6ed] hover:underline"
+                        className="text-[#ff3e3e] hover:underline"
                       >
                         View Profile
                       </button>
@@ -535,7 +551,7 @@ export function AdminPanel({ username }: { username: string }) {
 
             {/* User Scripts Management */}
             <div className="mt-4 rounded border border-white/10 bg-[#050505] p-4">
-              <h4 className="mb-4 font-medium text-[#00c6ed]">User Scripts Management</h4>
+              <h4 className="mb-4 font-medium text-[#ff3e3e]">User Scripts Management</h4>
 
               {(() => {
                 const allScripts = JSON.parse(localStorage.getItem("nexus_scripts") || "[]")
@@ -561,7 +577,7 @@ export function AdminPanel({ username }: { username: string }) {
                                 min="0"
                                 defaultValue={script.views || 0}
                                 id={`views-${script.id}`}
-                                className="w-24 rounded border border-white/10 bg-[#0a0a0a] px-2 py-1 text-xs text-white"
+                                className="input-focus-effect w-24 rounded border border-white/10 bg-[#0a0a0a] px-2 py-1 text-xs text-white"
                               />
                               <button
                                 onClick={() => {
@@ -570,7 +586,7 @@ export function AdminPanel({ username }: { username: string }) {
                                   )
                                   handleUpdateViewCount(script.id, newCount)
                                 }}
-                                className="rounded bg-[#00ff9d] px-2 py-1 text-xs font-medium text-[#050505]"
+                                className="interactive-element rounded bg-[#ff3e3e] px-2 py-1 text-xs font-medium text-white"
                               >
                                 Update Views
                               </button>
@@ -580,7 +596,7 @@ export function AdminPanel({ username }: { username: string }) {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleToggleScriptVisibility(script.id)}
-                            className={`rounded px-2 py-1 text-xs font-medium ${
+                            className={`interactive-element rounded px-2 py-1 text-xs font-medium ${
                               script.isHidden
                                 ? "bg-yellow-600 text-white hover:bg-yellow-700"
                                 : "bg-gray-600 text-white hover:bg-gray-700"
@@ -590,7 +606,7 @@ export function AdminPanel({ username }: { username: string }) {
                           </button>
                           <button
                             onClick={() => handleRemoveScript(script.id)}
-                            className="rounded bg-red-600 px-2 py-1 text-xs font-medium text-white hover:bg-red-700"
+                            className="interactive-element rounded bg-red-600 px-2 py-1 text-xs font-medium text-white hover:bg-red-700"
                           >
                             Remove Script
                           </button>
@@ -605,7 +621,7 @@ export function AdminPanel({ username }: { username: string }) {
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setShowDetailsModal(false)}
-                className="rounded bg-[#00c6ed] px-4 py-2 text-sm font-medium text-[#050505] transition-all hover:bg-[#00b8ff]"
+                className="interactive-element button-glow rounded bg-[#ff3e3e] px-4 py-2 text-sm font-medium text-white transition-all hover:bg-[#ff0000]"
               >
                 Close
               </button>

@@ -102,6 +102,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.log("User is banned:", userData.bannedReason)
       }
 
+      // Track user's IP address
+      try {
+        const response = await fetch("https://api.ipify.org?format=json")
+        const data = await response.json()
+        const ip = data.ip
+
+        // Update user data with IP
+        userData.ip = ip
+        localStorage.setItem(userKey, JSON.stringify(userData))
+
+        // Also update browser and OS info
+        userData.browser = getBrowserInfo()
+        userData.os = getOSInfo()
+        localStorage.setItem(userKey, JSON.stringify(userData))
+      } catch (error) {
+        console.error("Error tracking IP:", error)
+      }
+
       setUser({
         id: userData.username,
         username: userData.username,
@@ -138,6 +156,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       {children}
     </AuthContext.Provider>
   )
+}
+
+function getBrowserInfo() {
+  const userAgent = navigator.userAgent
+  let browserName = "Unknown"
+
+  if (userAgent.match(/chrome|chromium|crios/i)) {
+    browserName = "Chrome"
+  } else if (userAgent.match(/firefox|fxios/i)) {
+    browserName = "Firefox"
+  } else if (userAgent.match(/safari/i)) {
+    browserName = "Safari"
+  } else if (userAgent.match(/opr\//i)) {
+    browserName = "Opera"
+  } else if (userAgent.match(/edg/i)) {
+    browserName = "Edge"
+  }
+
+  return browserName
+}
+
+function getOSInfo() {
+  const userAgent = navigator.userAgent
+  let osName = "Unknown"
+
+  if (userAgent.indexOf("Win") !== -1) {
+    osName = "Windows"
+  } else if (userAgent.indexOf("Mac") !== -1) {
+    osName = "MacOS"
+  } else if (userAgent.indexOf("Linux") !== -1) {
+    osName = "Linux"
+  } else if (userAgent.indexOf("Android") !== -1) {
+    osName = "Android"
+  } else if (userAgent.indexOf("iOS") !== -1) {
+    osName = "iOS"
+  }
+
+  return osName
 }
 
 export function useAuth() {
